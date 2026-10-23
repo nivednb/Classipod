@@ -8,6 +8,7 @@ import 'package:classipod/features/now_playing/provider/now_playing_details_prov
 import 'package:classipod/features/now_playing/widgets/scrubber_bar.dart';
 import 'package:classipod/features/now_playing/widgets/seek_bar.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NowPlayingBottomBar extends ConsumerWidget {
@@ -37,6 +38,9 @@ class NowPlayingBottomBar extends ConsumerWidget {
                       .watch(nowPlayingDetailsProvider)
                       .currentMetadata
                       ?.trackDuration ??
+                  (kIsWeb
+                      ? ref.read(audioPlayerProvider).duration?.inMilliseconds
+                      : null) ??
                   1000) /
               1000;
           final playback = snapshot.data!;

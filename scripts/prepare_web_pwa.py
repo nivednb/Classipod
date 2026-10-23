@@ -6,6 +6,19 @@ from pathlib import Path
 
 
 def prepare(root: Path) -> None:
+    # Content-address the entrypoints so installed apps cannot reuse an older
+    # JavaScript bundle from the HTTP cache after a deployment.
+    main = root / 'main.dart.js'
+    bootstrap = root / 'flutter_bootstrap.js'
+    index = root / 'index.html'
+    if main.exists() and bootstrap.exists():
+        main_name = 'main.' + hashlib.sha256(main.read_bytes()).hexdigest()[:16] + '.dart.js'
+        main.rename(root / main_name)
+        script = bootstrap.read_text().replace('main.dart.js', main_name)
+        bootstrap_name = 'flutter_bootstrap.' + hashlib.sha256(script.encode()).hexdigest()[:16] + '.js'
+        (root / bootstrap_name).write_text(script)
+        bootstrap.unlink()
+        index.write_text(index.read_text().replace('flutter_bootstrap.js', bootstrap_name))
     paths = sorted(
         p.relative_to(root).as_posix()
         for p in root.rglob('*')
@@ -24,7 +37,7 @@ def prepare(root: Path) -> None:
 const CACHE = __CACHE__;
 const FILES = __FILES__;
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES.map(path => new Request(path, {cache: 'reload'})))));
 });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
