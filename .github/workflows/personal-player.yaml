@@ -1,0 +1,60 @@
+name: Personal player checks and iPhone build
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_ios:
+        description: Build an unsigned IPA for sideloading
+        type: boolean
+        default: false
+  push:
+    branches: [feature/personal-library-player]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          cache: true
+      - run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+      - run: flutter pub get --suppress-analytics
+      - run: flutter gen-l10n
+      - run: flutter analyze --suppress-analytics
+      - run: flutter test --no-pub --coverage --suppress-analytics
+      - run: flutter build web --release --no-pub
+      - uses: actions/upload-artifact@v7
+        with:
+          name: personal-player-web-preview
+          path: build/web/
+      - uses: actions/upload-artifact@v7
+        with:
+          name: personal-player-test-coverage
+          path: coverage/lcov.info
+
+  ios:
+    if: github.event_name == 'workflow_dispatch' && inputs.build_ios
+    needs: checks
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          cache: true
+      - run: flutter pub get --suppress-analytics
+      - run: flutter gen-l10n
+      - run: bash scripts/package_apple_release.sh ios
+      - uses: actions/upload-artifact@v7
+        with:
+          name: personal-player-unsigned-ios
+          path: |
+            build/releases/Classipod-iOS.ipa
+            build/releases/Classipod-iOS.ipa.sha256

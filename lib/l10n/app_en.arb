@@ -722,5 +722,46 @@
   "coverFlowBigTitle": "Big",
   "@coverFlowBigTitle": {
     "description": "The Cover Flow appearance option with larger album artwork, showing a centered cover and one tilted cover on each side, up to three covers total"
+  },
+  "libraryExperienceTitle": "Library & Wheel",
+  "foldersTitle": "Folders",
+  "localFoldersEmpty": "No indexed local music. Choose your music folder in Settings → Library Settings → Re-index.",
+  "importLocalPlaylist": "Import M3U playlist",
+  "playlistImportResult": "Playlist import",
+  "playlistImportedSummary": "{count} tracks imported. {missing} references missing or ambiguous.",
+  "@playlistImportedSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistImportFailed": "Could not read this playlist. Choose a UTF-8 M3U or M3U8 file.",
+  "playlistImportDone": "Done",
+  "songViewSetting": "Song view",
+  "songViewCompact": "Compact",
+  "songViewList": "List",
+  "songViewArtwork": "Artwork",
+  "songViewCovers": "Covers",
+  "wheelResponseSetting": "Wheel response",
+  "wheelResponseSmooth": "Smooth",
+  "wheelResponsePrecise": "Precise",
+  "wheelFeedbackSetting": "Wheel feedback",
+  "wheelFeedbackSoft": "Soft",
+  "wheelFeedbackCrisp": "Crisp",
+  "playFolder": "Play folder",
+  "musicLibraryRoot": "Music folders",
+  "songViewSwitch": "Change song view",
+  "backToParentFolder": "Parent folder",
+  "folderTrackCount": "{count} tracks",
+  "@folderTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

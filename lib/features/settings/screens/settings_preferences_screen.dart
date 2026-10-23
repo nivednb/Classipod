@@ -33,6 +33,7 @@ enum _SettingsDisplayItems {
   immersiveMode,
   showAppTutorial,
   librarySettings,
+  libraryExperience,
   resetSettings,
   donate;
 
@@ -70,6 +71,8 @@ enum _SettingsDisplayItems {
         return context.localization.immersiveModeSettingTitle;
       case showAppTutorial:
         return context.localization.showAppTutorialSettingTitle;
+      case libraryExperience:
+        return context.localization.libraryExperienceTitle;
       case librarySettings:
         return context.localization.librarySettingsScreenTitle;
       case resetSettings:
@@ -102,6 +105,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Future<void> _settingAction(_SettingsDisplayItems settingItem) async {
     setState(() => selectedDisplayItem = displayItems.indexOf(settingItem));
     switch (settingItem) {
+      case _SettingsDisplayItems.libraryExperience:
+        context.goNamed(Routes.libraryExperience.name);
+        break;
       case _SettingsDisplayItems.about:
         context.goNamed(Routes.about.name);
         break;

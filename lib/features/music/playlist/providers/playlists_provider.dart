@@ -32,6 +32,22 @@ class PlaylistsNotifier extends Notifier<List<PlaylistModel>> {
       _playlistBox.values.toList()
         ..sort((a, b) => compareNames(a.name, b.name));
 
+  Future<void> importNamedPlaylist({
+    required String name,
+    required List<MusicMetadata> songs,
+  }) async {
+    if (songs.isEmpty) return;
+    final names = _playlistBox.values.map((p) => p.name).toSet();
+    final base = name.trim().isEmpty ? 'Imported playlist' : name.trim();
+    var candidate = base;
+    var suffix = 2;
+    while (names.contains(candidate)) {
+      candidate = '$base (${suffix++})';
+    }
+    await _playlistBox.add(PlaylistModel(name: candidate, songs: songs));
+    refreshProvider();
+  }
+
   Future<void> saveNewPlaylist({
     required String newPlaylistPlaceholderString,
     required List<MusicMetadata> songs,

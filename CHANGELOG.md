@@ -1,5 +1,13 @@
 # Changelog
 
+## Personal player (unreleased)
+
+- Add indexed local folder browsing and M3U/M3U8 playlist importing.
+- Add Compact, List, Artwork and Covers song layouts.
+- Add angular wheel detents, selectable acceleration and iOS haptic styles.
+- Keep wheel selection visible using actual viewport bounds.
+- Add a manual unsigned iOS build workflow and feature tests.
+
 ## 2.1.0
 ### New features
 

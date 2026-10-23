@@ -7,8 +7,10 @@ import 'package:classipod/core/widgets/empty_state_widget.dart';
 import 'package:classipod/core/widgets/fast_scroll_indicator.dart';
 import 'package:classipod/features/custom_screen_elements/custom_screen.dart';
 import 'package:classipod/features/music/songs/provider/songs_provider.dart';
-import 'package:classipod/features/music/songs/widgets/song_list_tile.dart';
+import 'package:classipod/features/music/songs/widgets/music_view_tile.dart';
 import 'package:classipod/features/now_playing/provider/now_playing_details_provider.dart';
+import 'package:classipod/features/settings/controller/library_experience_controller.dart';
+import 'package:classipod/features/settings/screens/library_experience_screen.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +27,8 @@ class _SongsScreenState extends ConsumerState<SongsScreen> with CustomScreen {
   String get screenStateKey => routeName;
 
   @override
-  double get displayTileHeight => 54;
+  double get displayTileHeight =>
+      ref.read(libraryExperienceProvider).songView.extent;
 
   @override
   String get routeName => Routes.songs.name;
@@ -34,11 +37,16 @@ class _SongsScreenState extends ConsumerState<SongsScreen> with CustomScreen {
   List<MusicMetadata> get displayItems => ref.read(songsProvider);
 
   @override
-  Future<void> onSelectPressed() => _playSong(selectedDisplayItem);
+  Future<void> onSelectPressed() async {
+    if (displayItems.isNotEmpty) await _playSong(selectedDisplayItem);
+  }
 
   @override
-  void onSelectLongPress() =>
+  void onSelectLongPress() {
+    if (displayItems.isNotEmpty) {
       _navigateToSongMoreOptionsModal(selectedDisplayItem);
+    }
+  }
 
   void _navigateToSongMoreOptionsModal(int index) {
     setState(() => selectedDisplayItem = index);
@@ -61,6 +69,7 @@ class _SongsScreenState extends ConsumerState<SongsScreen> with CustomScreen {
   @override
   Widget build(BuildContext context) {
     ref.watch(songsProvider);
+    final view = ref.watch(libraryExperienceProvider).songView;
     final String? currentlyPlayingOriginalIndex = ref
         .watch(nowPlayingDetailsProvider.select((e) => e.currentMetadata))
         ?.identity;
@@ -81,6 +90,28 @@ class _SongsScreenState extends ConsumerState<SongsScreen> with CustomScreen {
     return CupertinoPageScaffold(
       child: Column(
         children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              onPressed: () async {
+                await ref
+                    .read(libraryExperienceProvider.notifier)
+                    .setView(
+                      SongView.values[(view.index + 1) %
+                          SongView.values.length],
+                    );
+                if (mounted) revealDisplayItem(selectedDisplayItem);
+              },
+              child: Semantics(
+                label: context.localization.songViewSwitch,
+                child: Text(
+                  songViewTitle(context, view),
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+          ),
           Flexible(
             child: FastScrollIndicator(
               wheelScrollIndex: wheelScrollIndex,
@@ -94,19 +125,12 @@ class _SongsScreenState extends ConsumerState<SongsScreen> with CustomScreen {
                 child: ListView.builder(
                   controller: scrollController,
                   itemCount: displayItems.length,
-                  prototypeItem: SongListTile(
-                    songName: '',
-                    trackArtistNames: '',
-                    isSelected: false,
-                    isCurrentlyPlaying: false,
-                    onTap: () {},
-                    onLongPress: () {},
-                  ),
-                  itemBuilder: (context, index) => SongListTile(
-                    songName: displayItems[index].trackName,
-                    trackArtistNames: displayItems[index].getTrackArtistNames,
-                    isSelected: selectedDisplayItem == index,
-                    isCurrentlyPlaying:
+                  itemExtent: displayTileHeight,
+                  itemBuilder: (context, index) => MusicViewTile(
+                    song: displayItems[index],
+                    view: view,
+                    selected: selectedDisplayItem == index,
+                    playing:
                         currentlyPlayingOriginalIndex ==
                         displayItems[index].identity,
                     onTap: () async => _playSong(index),

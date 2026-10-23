@@ -17,6 +17,7 @@ import 'package:classipod/features/music/artists/screens/artist_albums_screen.da
 import 'package:classipod/features/music/artists/screens/artists_selection_screen.dart';
 import 'package:classipod/features/music/cover_flow/screens/cover_flow_album_selection_screen.dart';
 import 'package:classipod/features/music/cover_flow/screens/cover_flow_screen.dart';
+import 'package:classipod/features/music/folders/screens/folders_screen.dart';
 import 'package:classipod/features/music/genres/screens/genre_songs_screen.dart';
 import 'package:classipod/features/music/genres/screens/genres_screen.dart';
 import 'package:classipod/features/music/playlist/screens/playlist_rename_screen.dart';
@@ -36,6 +37,7 @@ import 'package:classipod/features/settings/screens/about_screen.dart';
 import 'package:classipod/features/settings/screens/device_color_selection_screen.dart';
 import 'package:classipod/features/settings/screens/exclude_directories_screen.dart';
 import 'package:classipod/features/settings/screens/language_selection_screen.dart';
+import 'package:classipod/features/settings/screens/library_experience_screen.dart';
 import 'package:classipod/features/settings/screens/library_settings_screen.dart';
 import 'package:classipod/features/settings/screens/missing_tracks_screen.dart';
 import 'package:classipod/features/settings/screens/settings_preferences_screen.dart';
@@ -52,6 +54,8 @@ enum Routes {
   menu,
   settings,
   librarySettings,
+  libraryExperience,
+  folders,
   about,
   language,
   deviceColor,
@@ -95,6 +99,10 @@ enum Routes {
         return context.localization.menuScreenTitle;
       case settings:
         return context.localization.settingsScreenTitle;
+      case libraryExperience:
+        return context.localization.libraryExperienceTitle;
+      case folders:
+        return context.localization.foldersTitle;
       case librarySettings:
         return context.localization.librarySettingsScreenTitle;
       case about:
@@ -260,6 +268,14 @@ final routerProvider = Provider(
                         parentNavigatorKey: menuNavigatorKey,
                         pageBuilder: (context, state) => const CupertinoPage(
                           child: DeviceColorSelectionScreen(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: Routes.libraryExperience.name,
+                        name: Routes.libraryExperience.name,
+                        parentNavigatorKey: menuNavigatorKey,
+                        pageBuilder: (context, state) => const CupertinoPage(
+                          child: LibraryExperienceScreen(),
                         ),
                       ),
                       GoRoute(
@@ -605,6 +621,14 @@ final routerProvider = Provider(
                             ],
                           ),
                         ],
+                      ),
+                      GoRoute(
+                        path: Routes.folders.name,
+                        name: Routes.folders.name,
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => const CupertinoPage(
+                          child: ScreenPageContent(child: FoldersScreen()),
+                        ),
                       ),
                       GoRoute(
                         path: Routes.songs.name,

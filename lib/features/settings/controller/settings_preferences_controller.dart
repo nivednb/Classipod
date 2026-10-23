@@ -10,6 +10,7 @@ import 'package:classipod/core/services/audio_player_service.dart';
 import 'package:classipod/core/subsonic/subsonic_controller.dart';
 import 'package:classipod/features/app_startup/controllers/splash_controller.dart';
 import 'package:classipod/features/music/playlist/models/playlist_model.dart';
+import 'package:classipod/features/settings/controller/library_experience_controller.dart';
 import 'package:classipod/features/settings/models/app_theme.dart';
 import 'package:classipod/features/settings/models/click_wheel_sensitivity.dart';
 import 'package:classipod/features/settings/models/click_wheel_size.dart';
@@ -382,6 +383,7 @@ class SettingsPreferencesControllerNotifier
     await ref
         .read(settingsPreferencesRepositoryProvider)
         .setCoverFlowAppearance(CoverFlowAppearance.original);
+    await ref.read(libraryExperienceProvider.notifier).reset();
     ref.invalidateSelf();
   }
 

@@ -58,36 +58,40 @@ mixin CustomScreen<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   void onSelectLongPress() {}
 
-  void scrollForward() {
-    if (selectedDisplayItem < displayItems.length + extraDisplayItems - 1) {
-      setState(() {
-        selectedDisplayItem++;
-        wheelScrollIndex.value = selectedDisplayItem;
-      });
-
-      final double currentSelectedDisplayItemsHeight =
-          (selectedDisplayItem + 1) * displayTileHeight + topStatusBarHeight;
-
-      final double currentScrollHeight =
-          context.screenSize.height + scrollController.offset;
-
-      if (currentSelectedDisplayItemsHeight > currentScrollHeight) {
-        scrollController.jumpTo(scrollController.offset + displayTileHeight);
-      }
+  void _revealWheelSelection() {
+    if (!scrollController.hasClients) return;
+    final position = scrollController.position;
+    if (!position.hasContentDimensions) return;
+    final top = selectedDisplayItem * displayTileHeight;
+    final bottom = top + displayTileHeight;
+    var target = position.pixels;
+    if (top < target) target = top;
+    if (bottom > target + position.viewportDimension) {
+      target = bottom - position.viewportDimension;
     }
+    scrollController.jumpTo(
+      target.clamp(position.minScrollExtent, position.maxScrollExtent),
+    );
+  }
+
+  void scrollForward() {
+    if (selectedDisplayItem >= displayItems.length + extraDisplayItems - 1) {
+      return;
+    }
+    setState(() {
+      selectedDisplayItem++;
+      wheelScrollIndex.value = selectedDisplayItem;
+    });
+    _revealWheelSelection();
   }
 
   void scrollBackward() {
-    if (selectedDisplayItem > 0) {
-      setState(() {
-        selectedDisplayItem--;
-        wheelScrollIndex.value = selectedDisplayItem;
-      });
-    }
-
-    if (selectedDisplayItem * displayTileHeight < scrollController.offset) {
-      scrollController.jumpTo(displayTileHeight * selectedDisplayItem);
-    }
+    if (selectedDisplayItem <= 0) return;
+    setState(() {
+      selectedDisplayItem--;
+      wheelScrollIndex.value = selectedDisplayItem;
+    });
+    _revealWheelSelection();
   }
 
   void onMenuButtonPressed() {
