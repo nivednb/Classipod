@@ -1,3 +1,10 @@
+## Home Screen player (unreleased)
+
+- Publish the personal player through GitHub Pages with standalone iPhone metadata.
+- Import audio from Files into on-device browser storage and restore it after reload.
+- Reconnect saved playlists to fresh playback URLs and cache the app shell offline.
+- Correct icon filename case for GitHub Pages.
+
 # Changelog
 
 ## Personal player (unreleased)

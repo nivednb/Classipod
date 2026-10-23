@@ -4,7 +4,9 @@ import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/extensions/go_router_extensions.dart';
 import 'package:classipod/core/models/music_metadata.dart';
 import 'package:classipod/core/navigation/routes.dart';
+import 'package:classipod/core/services/audio_files_service.dart';
 import 'package:classipod/core/services/audio_player_service.dart';
+import 'package:classipod/core/services/browser_library.dart';
 import 'package:classipod/core/theme/ipod_gradients.dart';
 import 'package:classipod/features/custom_screen_elements/custom_screen.dart';
 import 'package:classipod/features/music/folders/models/folder_index.dart';
@@ -14,7 +16,12 @@ import 'package:classipod/features/music/playlist/providers/playlists_provider.d
 import 'package:classipod/features/music/songs/provider/songs_provider.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final _browserOfflineReadyProvider = FutureProvider<bool>(
+  (ref) => browserOfflineReady(),
+);
 
 final folderIndexProvider = Provider<FolderIndex>((ref) {
   return FolderIndex(ref.watch(songsProvider));
@@ -159,6 +166,40 @@ class _FoldersScreenState extends ConsumerState<FoldersScreen>
     );
   }
 
+  Future<void> _importSongs() async {
+    if (_importing) return;
+    setState(() => _importing = true);
+    String message;
+    try {
+      final count = await importBrowserSongs();
+      if (count == 0) return;
+      ref.invalidate(audioFilesServiceProvider);
+      await ref.read(audioFilesServiceProvider.future);
+      _parents.clear();
+      _path = null;
+      selectedDisplayItem = 0;
+      message = '$count songs imported. Keep your original files as a backup.';
+    } catch (_) {
+      message = 'Could not save songs. Check available storage and try a smaller batch.';
+    } finally {
+      if (mounted) setState(() => _importing = false);
+    }
+    if (!mounted) return;
+    await showCupertinoDialog<void>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Import songs'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.watch(folderIndexProvider);
@@ -169,6 +210,28 @@ class _FoldersScreenState extends ConsumerState<FoldersScreen>
     return CupertinoPageScaffold(
       child: Column(
         children: [
+          if (kIsWeb)
+            CupertinoButton(
+              padding: const EdgeInsets.all(6),
+              onPressed: _importing ? null : _importSongs,
+              child: const Text(
+                'Import songs from Files',
+                style: TextStyle(fontSize: 13),
+              ),
+            ),
+          if (kIsWeb)
+            Text(
+              ref
+                  .watch(_browserOfflineReadyProvider)
+                  .when(
+                    data: (ready) => ready
+                        ? 'Offline app ready'
+                        : 'Offline loading unavailable',
+                    loading: () => 'Preparing app for offline use…',
+                    error: (_, _) => 'Offline loading unavailable',
+                  ),
+              style: const TextStyle(fontSize: 10),
+            ),
           Row(
             children: [
               if (_parents.isNotEmpty)
@@ -222,7 +285,10 @@ class _FoldersScreenState extends ConsumerState<FoldersScreen>
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Text(
-                        l.localFoldersEmpty,
+                        kIsWeb
+                            ? 'Add this app to your Home Screen first, then import songs from Files. '
+                                  'Music stays on this device. Browser storage may be cleared; keep your originals.'
+                            : l.localFoldersEmpty,
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 13),
                       ),

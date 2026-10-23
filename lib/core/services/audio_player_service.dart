@@ -5,6 +5,7 @@ import 'package:classipod/core/constants/keys.dart';
 import 'package:classipod/core/models/music_metadata.dart';
 import 'package:classipod/core/models/playback_shuffle_mode.dart';
 import 'package:classipod/core/providers/filtered_audio_files_provider.dart';
+import 'package:classipod/core/services/browser_library.dart';
 import 'package:classipod/core/services/playback/library_audio_handler.dart';
 import 'package:classipod/core/services/playback/playback_session.dart';
 import 'package:classipod/core/subsonic/subsonic_controller.dart';
@@ -27,7 +28,10 @@ final libraryAudioHandlerProvider = Provider<LibraryAudioHandler>((ref) {
   final handler = LibraryAudioHandler(
     ref.read(audioPlayerProvider),
     resolveSource: (song) async {
-      if (!song.isSubsonic) return song.toAudioSource() as UriAudioSource;
+      if (!song.isSubsonic) {
+        final local = kIsWeb ? await resolveBrowserSong(song) : song;
+        return local.toAudioSource() as UriAudioSource;
+      }
       final remote = ref.read(subsonicControllerProvider).value;
       final context = rootNavigatorKey.currentContext;
       if (remote?.enabled == true &&

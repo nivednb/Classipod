@@ -80,3 +80,33 @@ background playback or iPhone haptics.
    Bluetooth controls and background playback.
 
 Consult `docs/personal-player-validation.md` for checks actually performed.
+
+## Home Screen web version
+
+Open the personal GitHub Pages player in Safari, then use Share → Add to Home
+Screen. Launch that icon before importing music: Safari tabs and Home Screen
+apps may have separate storage on iOS.
+
+Music → Folders → Import songs from Files copies selected audio into this
+site's IndexedDB on the device. Music is never uploaded to the repository.
+Imports use filenames as titles; embedded artist/album artwork extraction is
+not implemented in the web importer. Selecting the same filename again replaces
+that entry. iPhone's Files picker usually provides individual files, so a folder
+hierarchy is not promised there. Supported playback formats depend on Safari;
+start with MP3 or M4A.
+
+The player uses imported music when present, otherwise the demo collection.
+The existing document button imports M3U/M3U8 references after audio is imported.
+Relative playlist references can match unique filename suffixes. Keep originals:
+iOS can remove browser storage under storage pressure or after clearing website
+data. Refresh/reopen resolves fresh audio URLs for saved playlists.
+
+The Pages workflow caches the app shell and includes the Flutter engine locally.
+For offline use, first open the app online and wait for “Offline app ready” in Music → Folders.
+Imported audio then plays without downloading it from a server. Remote demo and
+Subsonic streams still require a connection. Browser background/lock-screen
+playback and iOS haptics remain subject to Safari limitations. Physical iPhone
+Home Screen installation and persistence must be tested on the user's device.
+
+Deployment is handled only by `.github/workflows/personal-web.yaml`; Pages must
+use the GitHub Actions source. No native signing or Apple account is required.

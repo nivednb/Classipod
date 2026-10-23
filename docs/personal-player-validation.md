@@ -24,3 +24,15 @@ Not performed: macOS/Xcode compilation, physical iPhone folder permission and
 playlist picker checks, haptic comparison with SepiaPod, background playback
 acceptance, signing or sideloading. No personal music library was available on
 this host. The macOS GitHub Actions build workflow is included but was not run.
+
+## Home Screen web extension — 2026-10-23
+
+- Flutter analysis: no issues (48.1 s).
+- Full Flutter regression suite: all 201 tests passed (42 s after native setup).
+- Browser-library/service-worker tests in Node: 5 passed, including persistence
+  across page contexts, Unicode filenames, replacement URLs, cancellation,
+  storage failure and offline navigation fallback.
+- PWA build/manifest checks in Python: 2 passed; icon filenames match disk case.
+
+Physical Safari installation, storage retention under iOS pressure and locked
+screen playback still require checks on the user's iPhone.

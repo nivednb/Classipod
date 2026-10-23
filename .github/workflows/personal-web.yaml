@@ -1,0 +1,63 @@
+name: Publish personal Home Screen player
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'lib/**'
+      - 'web/**'
+      - 'pubspec.*'
+      - 'assets/**'
+      - 'test/web/**'
+      - 'scripts/prepare_web_pwa.py'
+      - '.github/workflows/personal-web.yaml'
+  workflow_dispatch:
+
+env:
+  FLUTTER_SUPPRESS_ANALYTICS: 'true'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: personal-player-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix test/web
+      - run: npm test --prefix test/web
+      - run: python3 -m unittest discover -s test/web -p 'test_*.py'
+      - run: flutter pub get --suppress-analytics
+      - run: flutter gen-l10n
+      - run: flutter analyze --suppress-analytics
+      - run: flutter build web --release --no-pub --base-href /Classipod/ --no-web-resources-cdn --suppress-analytics
+      - run: python3 scripts/prepare_web_pwa.py build/web
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - uses: actions/deploy-pages@v4
+        id: deployment
