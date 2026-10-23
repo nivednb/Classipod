@@ -11,6 +11,7 @@ import 'package:classipod/core/subsonic/subsonic_controller.dart';
 import 'package:classipod/features/music/album/providers/album_details_provider.dart';
 import 'package:classipod/features/music/playlist/providers/playlists_provider.dart';
 import 'package:classipod/features/now_playing/models/now_playing_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -46,6 +47,26 @@ class NowPlayingDetailsNotifier extends Notifier<NowPlayingModel> {
         }
       }),
     );
+
+    if (kIsWeb) {
+      subscriptions.add(
+        player.durationStream.listen((duration) {
+          final song = state.currentMetadata;
+          if (duration == null ||
+              duration <= Duration.zero ||
+              !(song?.songId?.startsWith('browser:') ?? false)) {
+            return;
+          }
+          if (song!.trackDuration != duration.inMilliseconds) {
+            state = state.copyWith(
+              currentMetadata: song.copyWith(
+                trackDuration: duration.inMilliseconds,
+              ),
+            );
+          }
+        }),
+      );
+    }
 
     final loopStream = handler.playbackState
         .map(
