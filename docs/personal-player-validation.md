@@ -20,19 +20,37 @@ The JavaScript web build succeeds. Upstream universal_html dependencies produce
 Wasm compatibility warnings during the optional dry run; no Wasm build is
 claimed.
 
-Not performed: macOS/Xcode compilation, physical iPhone folder permission and
-playlist picker checks, haptic comparison with SepiaPod, background playback
-acceptance, signing or sideloading. No personal music library was available on
-this host. The macOS GitHub Actions build workflow is included but was not run.
+The unsigned iOS build subsequently passed on the GitHub macOS runner:
+https://github.com/nivednb/Classipod/actions/runs/39920296286
+
+Not performed: physical iPhone folder permission and playlist picker checks,
+haptic comparison with SepiaPod, background playback acceptance, signing or
+sideloading. No personal music library was available on this host.
 
 ## Home Screen web extension — 2026-10-23
 
-- Flutter analysis: no issues (48.1 s).
-- Full Flutter regression suite: all 201 tests passed (42 s after native setup).
+- Flutter analysis: no issues; final local pass 34.8 s.
+- Full Flutter regression suite: all 201 tests passed (42 s after native setup),
+  before the final browser-only duration/cache refinements.
 - Browser-library/service-worker tests in Node: 5 passed, including persistence
   across page contexts, Unicode filenames, replacement URLs, cancellation,
   storage failure and offline navigation fallback.
-- PWA build/manifest checks in Python: 2 passed; icon filenames match disk case.
+- PWA build/manifest checks in Python: 3 passed; icon filenames match disk case.
 
 Physical Safari installation, storage retention under iOS pressure and locked
 screen playback still require checks on the user's iPhone.
+
+Final deployment: https://nivednb.github.io/Classipod/
+
+The final GitHub Pages workflow passed analysis, JavaScript/Python checks and
+release compilation. Live Chromium checks confirmed:
+
+- Generated WAV import and persistence after closing/reopening the app.
+- M3U8 import preserving two repeated entries, with zero unresolved references.
+- Playback from the saved playlist after reopening, advancing to entry 2 of 2,
+  with the correct three-second duration.
+- “Offline app ready” and successful HTTP responses for all 48 cached resources.
+- Content-versioned JavaScript entrypoints loaded after a deployment update.
+
+This verifies cache readiness and the offline fallback test, not a physical
+Safari airplane-mode or lock-screen test. No personal audio was uploaded.
