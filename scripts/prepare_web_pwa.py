@@ -9,7 +9,9 @@ def prepare(root: Path) -> None:
     paths = sorted(
         p.relative_to(root).as_posix()
         for p in root.rglob('*')
-        if p.is_file() and p.name not in {
+        if p.is_file()
+        and not any(part.startswith('.') for part in p.relative_to(root).parts)
+        and p.name not in {
             'personal-player-sw.js', 'flutter_service_worker.js', '.DS_Store', '.nojekyll',
         }
     )
