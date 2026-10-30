@@ -35,7 +35,7 @@ class SettingsListTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               spacing: 5,
               children: [
-                Flexible(
+                Expanded(
                   child: SelectedMarqueeText(
                     text,
                     isSelected: isSelected,
@@ -47,12 +47,17 @@ class SettingsListTile extends StatelessWidget {
                   ),
                 ),
                 if (value != null)
-                  Text(
-                    value!,
-                    style: IpodTypography.menu.copyWith(
-                      color: isSelected
-                          ? context.appInverseTextColor
-                          : context.appSecondaryTextColor,
+                  Flexible(
+                    child: Text(
+                      value!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                      style: IpodTypography.menu.copyWith(
+                        color: isSelected
+                            ? context.appInverseTextColor
+                            : context.appSecondaryTextColor,
+                      ),
                     ),
                   ),
                 if (value == null && isSelected)
