@@ -102,9 +102,9 @@ class DeviceFrame extends ConsumerWidget {
                 child: Column(
                   children: [
                     DeviceScreen(key: deviceScreenGlobalKey, child: child),
-                    const Spacer(),
-                    DeviceControls(key: deviceControlsGlobalKey),
                     const Spacer(flex: 2),
+                    DeviceControls(key: deviceControlsGlobalKey),
+                    const Spacer(),
                   ],
                 ),
               ),

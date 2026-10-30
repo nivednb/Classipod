@@ -20,7 +20,7 @@ class FirstGenerationWheelPainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
-    canvas.drawCircle(center, radius * 0.76, paint);
+    canvas.drawCircle(center, radius * 0.66, paint);
     canvas.drawCircle(center, radius - 0.7, paint);
     for (final angle in [
       math.pi / 4,
@@ -30,7 +30,7 @@ class FirstGenerationWheelPainter extends CustomPainter {
     ]) {
       final direction = Offset(math.cos(angle), math.sin(angle));
       canvas.drawLine(
-        center + direction * radius * 0.76,
+        center + direction * radius * 0.66,
         center + direction * (radius - 1),
         paint,
       );
