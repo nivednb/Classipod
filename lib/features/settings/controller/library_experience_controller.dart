@@ -32,6 +32,7 @@ class LibraryExperience {
   final WheelLabelColor wheelLabelColor;
   final WheelStyle wheelStyle;
   final WheelPosition wheelPosition;
+  final bool threeDimensional;
 
   const LibraryExperience({
     this.songView = SongView.artwork,
@@ -41,6 +42,7 @@ class LibraryExperience {
     this.wheelLabelColor = WheelLabelColor.device,
     this.wheelStyle = WheelStyle.classic,
     this.wheelPosition = WheelPosition.normal,
+    this.threeDimensional = false,
   });
 }
 
@@ -80,6 +82,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
               .where((v) => v.name == preferences.getString('wheelPosition'))
               .firstOrNull ??
           WheelPosition.normal,
+      threeDimensional: preferences.getBool('threeDimensional') ?? false,
       wheelFeedback: preferences.getString('wheelFeedback') == 'crisp'
           ? WheelFeedback.crisp
           : WheelFeedback.soft,
@@ -98,6 +101,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
     await preferences.remove('wheelLabelColor');
     await preferences.remove('wheelStyle');
     await preferences.remove('wheelPosition');
+    await preferences.remove('threeDimensional');
   }
 
   Future<void> setView(SongView view) async {
@@ -109,6 +113,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
       wheelPosition: state.wheelPosition,
+      threeDimensional: state.threeDimensional,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -125,6 +130,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
       wheelPosition: state.wheelPosition,
+      threeDimensional: state.threeDimensional,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -140,6 +146,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
       wheelPosition: state.wheelPosition,
+      threeDimensional: state.threeDimensional,
       wheelFeedback: state.wheelFeedback == WheelFeedback.soft
           ? WheelFeedback.crisp
           : WheelFeedback.soft,
@@ -161,6 +168,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
       wheelPosition: state.wheelPosition,
+      threeDimensional: state.threeDimensional,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -180,6 +188,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelLabelColor: next,
       wheelStyle: state.wheelStyle,
       wheelPosition: state.wheelPosition,
+      threeDimensional: state.threeDimensional,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -199,6 +208,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: next,
       wheelPosition: state.wheelPosition,
+      threeDimensional: state.threeDimensional,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -217,10 +227,29 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
       wheelPosition: next,
+      threeDimensional: state.threeDimensional,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
         .requireValue
         .setString('wheelPosition', next.name);
+  }
+
+  Future<void> toggleThreeDimensional() async {
+    final next = !state.threeDimensional;
+    state = LibraryExperience(
+      songView: state.songView,
+      acceleratedWheel: state.acceleratedWheel,
+      wheelFeedback: state.wheelFeedback,
+      wheelColor: state.wheelColor,
+      wheelLabelColor: state.wheelLabelColor,
+      wheelStyle: state.wheelStyle,
+      wheelPosition: state.wheelPosition,
+      threeDimensional: next,
+    );
+    await ref
+        .read(sharedPreferencesWithCacheProvider)
+        .requireValue
+        .setBool('threeDimensional', next);
   }
 }

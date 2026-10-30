@@ -81,7 +81,7 @@ test('database failure rejects import instead of claiming files were saved', asy
 
 test('uses embedded metadata and artwork without changing stored song IDs', async () => {
   const reader = {read(blob, callbacks) { callbacks.onSuccess({tags: {
-    title: 'Malayalam song', artist: 'Artist', album: 'Album',
+    title: 'Malayalam song', artist: 'Artist', album: 'Album', genre: 'Pop',
     picture: {format: 'image/jpeg', data: [1, 2, 3]},
   }}); }};
   const app = page(new IDBFactory(), reader);
@@ -91,6 +91,7 @@ test('uses embedded metadata and artwork without changing stored song IDs', asyn
   assert.equal(row.title, 'Malayalam song');
   assert.equal(row.artist, 'Artist');
   assert.equal(row.album, 'Album');
+  assert.equal(row.genre, 'Pop');
   assert.match(row.artwork, /^blob:/);
   await app.importFiles([song('Song [abcdefghijk].m4a', 'replacement')]);
   assert.ok(app.revoked.includes(row.artwork));

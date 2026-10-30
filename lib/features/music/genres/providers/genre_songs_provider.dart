@@ -1,4 +1,5 @@
 import 'package:classipod/core/models/music_metadata.dart';
+import 'package:classipod/core/utils/library_languages.dart';
 import 'package:classipod/features/music/songs/provider/songs_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,7 +8,7 @@ final genreSongsMetadataListProvider = Provider.autoDispose
       final List<MusicMetadata> genreSongsMetadataList = [];
 
       for (final metadata in ref.watch(songsProvider)) {
-        if (metadata.genres.contains(genreName)) {
+        if (libraryCategories(metadata).contains(genreName)) {
           genreSongsMetadataList.add(metadata);
         }
       }

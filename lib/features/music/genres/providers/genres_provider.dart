@@ -1,6 +1,7 @@
 import 'package:classipod/core/models/music_metadata.dart';
 import 'package:classipod/core/providers/filtered_audio_files_provider.dart';
 import 'package:classipod/core/utils/album_order.dart';
+import 'package:classipod/core/utils/library_languages.dart';
 import 'package:classipod/core/utils/name_order.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,7 +24,7 @@ final genreCountsProvider =
             .where((name) => name.isNotEmpty)
             .toSet();
         if (songArtists.isEmpty) songArtists.add('unknown artist');
-        for (final genre in song.genres) {
+        for (final genre in libraryCategories(song)) {
           artists.putIfAbsent(genre, () => {}).addAll(songArtists);
           albums.putIfAbsent(genre, () => {}).add(albumIdentityOf(song));
         }

@@ -5,9 +5,10 @@ import 'package:flutter/widgets.dart';
 /// Outlines the four outer buttons of a first-generation-style wheel.
 /// Painting only: the existing tap and rotation hit targets stay unchanged.
 class FirstGenerationWheelPainter extends CustomPainter {
-  const FirstGenerationWheelPainter(this.color);
+  const FirstGenerationWheelPainter(this.color, {this.raised = false});
 
   final Color color;
+  final bool raised;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -20,6 +21,14 @@ class FirstGenerationWheelPainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
+    if (raised) {
+      final shadow = Paint()
+        ..color = const Color(0x55000000)
+        ..strokeWidth = 3
+        ..style = PaintingStyle.stroke
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+      canvas.drawCircle(center + const Offset(0, 1), radius * 0.66, shadow);
+    }
     canvas.drawCircle(center, radius * 0.66, paint);
     canvas.drawCircle(center, radius - 0.7, paint);
     for (final angle in [
@@ -39,5 +48,5 @@ class FirstGenerationWheelPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant FirstGenerationWheelPainter oldDelegate) =>
-      oldDelegate.color != color;
+      oldDelegate.color != color || oldDelegate.raised != raised;
 }

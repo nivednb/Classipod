@@ -166,7 +166,10 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
             child: CustomPaint(
               foregroundPainter:
                   experience.wheelStyle == WheelStyle.firstGeneration
-                  ? FirstGenerationWheelPainter(wheelColor)
+                  ? FirstGenerationWheelPainter(
+                      wheelColor,
+                      raised: experience.threeDimensional,
+                    )
                   : null,
               child: Container(
                 height: screenWidth * clickWheelRadiusRatio,
@@ -174,7 +177,32 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: wheelColor,
+                  color: experience.threeDimensional ? null : wheelColor,
+                  gradient: experience.threeDimensional
+                      ? LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color.lerp(wheelColor, CupertinoColors.white, .24)!,
+                            wheelColor,
+                            Color.lerp(wheelColor, CupertinoColors.black, .24)!,
+                          ],
+                        )
+                      : null,
+                  boxShadow: experience.threeDimensional
+                      ? [
+                          const BoxShadow(
+                            color: Color(0x66000000),
+                            blurRadius: 7,
+                            offset: Offset(0, 4),
+                          ),
+                          const BoxShadow(
+                            color: Color(0x44ffffff),
+                            blurRadius: 2,
+                            offset: Offset(-1, -1),
+                          ),
+                        ]
+                      : null,
                 ),
                 clipBehavior: Clip.hardEdge,
                 child: Column(
@@ -209,7 +237,9 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                           }
                         },
                         child: ColoredBox(
-                          color: wheelColor,
+                          color: experience.threeDimensional
+                              ? const Color(0x00000000)
+                              : wheelColor,
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: Text(
@@ -244,7 +274,9 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                             child: SizedBox(
                               height: screenWidth * 0.2175,
                               child: ColoredBox(
-                                color: wheelColor,
+                                color: experience.threeDimensional
+                                    ? const Color(0x00000000)
+                                    : wheelColor,
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: CustomPaint(
@@ -289,6 +321,19 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                                       experience.wheelColor == WheelColor.device
                                       ? deviceColorStyle
                                             .innerButtonGradientColors
+                                      : experience.threeDimensional
+                                      ? [
+                                          Color.lerp(
+                                            wheelColor,
+                                            CupertinoColors.white,
+                                            .18,
+                                          )!,
+                                          Color.lerp(
+                                            wheelColor,
+                                            CupertinoColors.black,
+                                            .16,
+                                          )!,
+                                        ]
                                       : [wheelColor, wheelColor],
                                 ),
                               ),
@@ -312,7 +357,9 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                             child: SizedBox(
                               height: screenWidth * selectButtonRadiusRatio,
                               child: ColoredBox(
-                                color: wheelColor,
+                                color: experience.threeDimensional
+                                    ? const Color(0x00000000)
+                                    : wheelColor,
                                 child: Align(
                                   alignment: Alignment.centerRight,
                                   child: CustomPaint(
@@ -334,7 +381,9 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                             .read(deviceButtonsServiceProvider.notifier)
                             .playPauseButtonClick(),
                         child: ColoredBox(
-                          color: wheelColor,
+                          color: experience.threeDimensional
+                              ? const Color(0x00000000)
+                              : wheelColor,
                           child: Align(
                             alignment: Alignment.bottomCenter,
                             child: CustomPaint(

@@ -19,6 +19,9 @@ class DeviceFrame extends ConsumerWidget {
     final DeviceColor deviceColor = ref.watch(
       settingsPreferencesControllerProvider.select((e) => e.deviceColor),
     );
+    final raised = ref.watch(
+      libraryExperienceProvider.select((e) => e.threeDimensional),
+    );
     final position = ref.watch(
       libraryExperienceProvider.select((e) => e.wheelPosition),
     );
@@ -100,6 +103,24 @@ class DeviceFrame extends ConsumerWidget {
               ),
             ),
           ),
+          if (raised)
+            const Positioned.fill(
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0x30ffffff),
+                        Color(0x00ffffff),
+                        Color(0x30000000),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           SafeArea(
             minimum: const EdgeInsets.fromLTRB(20, 30, 20, 20),
             child: Center(

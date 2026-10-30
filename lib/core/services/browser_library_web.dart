@@ -28,6 +28,11 @@ Future<List<MusicMetadata>> readBrowserSongs() async {
             ? null
             : [row['artist'] as String],
         albumName: row['album'] as String?,
+        genres: ((row['genre'] as String?) ?? '')
+            .split(';')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList(),
         thumbnailPath: row['artwork'] as String?,
         mimeType: row['mime'] as String?,
       ),

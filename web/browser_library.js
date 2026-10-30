@@ -90,7 +90,8 @@
             }
             resolve({title: typeof t.title === 'string' ? t.title : null,
               artist: typeof t.artist === 'string' ? t.artist : null,
-              album: typeof t.album === 'string' ? t.album : null, artwork});
+              album: typeof t.album === 'string' ? t.album : null,
+              genre: typeof t.genre === 'string' ? t.genre : null, artwork});
           },
           onError() { resolve({}); },
         });
@@ -116,7 +117,7 @@
         const tags = await readTags(row);
         result[index] = {id: row.id, path: row.path, mime: row.mime,
           title: tags.title || row.name.replace(audioExtension, '').replace(/\s*\[[A-Za-z0-9_-]{11}\]$/, ''),
-          artist: tags.artist, album: tags.album, artwork: tags.artwork,
+          artist: tags.artist, album: tags.album, genre: tags.genre, artwork: tags.artwork,
           url: objectUrls.get(row.id)};
       }
     }
