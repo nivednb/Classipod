@@ -22,6 +22,8 @@ enum WheelLabelColor { device, white, black }
 
 enum WheelStyle { classic, firstGeneration }
 
+enum WheelPosition { normal, higher, lower }
+
 class LibraryExperience {
   final SongView songView;
   final bool acceleratedWheel;
@@ -29,6 +31,7 @@ class LibraryExperience {
   final WheelColor wheelColor;
   final WheelLabelColor wheelLabelColor;
   final WheelStyle wheelStyle;
+  final WheelPosition wheelPosition;
 
   const LibraryExperience({
     this.songView = SongView.artwork,
@@ -37,6 +40,7 @@ class LibraryExperience {
     this.wheelColor = WheelColor.device,
     this.wheelLabelColor = WheelLabelColor.device,
     this.wheelStyle = WheelStyle.classic,
+    this.wheelPosition = WheelPosition.normal,
   });
 }
 
@@ -71,6 +75,11 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
               .where((v) => v.name == preferences.getString('wheelStyle'))
               .firstOrNull ??
           WheelStyle.classic,
+      wheelPosition:
+          WheelPosition.values
+              .where((v) => v.name == preferences.getString('wheelPosition'))
+              .firstOrNull ??
+          WheelPosition.normal,
       wheelFeedback: preferences.getString('wheelFeedback') == 'crisp'
           ? WheelFeedback.crisp
           : WheelFeedback.soft,
@@ -88,6 +97,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
     await preferences.remove('wheelColor');
     await preferences.remove('wheelLabelColor');
     await preferences.remove('wheelStyle');
+    await preferences.remove('wheelPosition');
   }
 
   Future<void> setView(SongView view) async {
@@ -98,6 +108,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelColor: state.wheelColor,
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
+      wheelPosition: state.wheelPosition,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -113,6 +124,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelColor: state.wheelColor,
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
+      wheelPosition: state.wheelPosition,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -127,6 +139,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelColor: state.wheelColor,
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
+      wheelPosition: state.wheelPosition,
       wheelFeedback: state.wheelFeedback == WheelFeedback.soft
           ? WheelFeedback.crisp
           : WheelFeedback.soft,
@@ -147,6 +160,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelColor: next,
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: state.wheelStyle,
+      wheelPosition: state.wheelPosition,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -165,6 +179,7 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelColor: state.wheelColor,
       wheelLabelColor: next,
       wheelStyle: state.wheelStyle,
+      wheelPosition: state.wheelPosition,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
@@ -183,10 +198,29 @@ class LibraryExperienceController extends Notifier<LibraryExperience> {
       wheelColor: state.wheelColor,
       wheelLabelColor: state.wheelLabelColor,
       wheelStyle: next,
+      wheelPosition: state.wheelPosition,
     );
     await ref
         .read(sharedPreferencesWithCacheProvider)
         .requireValue
         .setString('wheelStyle', next.name);
+  }
+
+  Future<void> cycleWheelPosition() async {
+    final next = WheelPosition
+        .values[(state.wheelPosition.index + 1) % WheelPosition.values.length];
+    state = LibraryExperience(
+      songView: state.songView,
+      acceleratedWheel: state.acceleratedWheel,
+      wheelFeedback: state.wheelFeedback,
+      wheelColor: state.wheelColor,
+      wheelLabelColor: state.wheelLabelColor,
+      wheelStyle: state.wheelStyle,
+      wheelPosition: next,
+    );
+    await ref
+        .read(sharedPreferencesWithCacheProvider)
+        .requireValue
+        .setString('wheelPosition', next.name);
   }
 }

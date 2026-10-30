@@ -29,6 +29,7 @@ void main() {
       final first = create();
       await first.read(sharedPreferencesWithCacheProvider.future);
       final settings = first.read(libraryExperienceProvider.notifier);
+      await settings.cycleWheelPosition();
       await settings.setView(SongView.covers);
       await settings.toggleAcceleration();
       await settings.toggleFeedback();
@@ -46,6 +47,7 @@ void main() {
       expect(value.wheelColor, WheelColor.red);
       expect(value.wheelLabelColor, WheelLabelColor.white);
       expect(value.wheelStyle, WheelStyle.firstGeneration);
+      expect(value.wheelPosition, WheelPosition.higher);
     },
   );
 }

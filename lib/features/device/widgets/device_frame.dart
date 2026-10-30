@@ -2,6 +2,7 @@ import 'package:classipod/core/constants/assets.dart';
 import 'package:classipod/core/constants/keys.dart';
 import 'package:classipod/features/device/widgets/device_controls.dart';
 import 'package:classipod/features/device/widgets/device_screen.dart';
+import 'package:classipod/features/settings/controller/library_experience_controller.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
 import 'package:classipod/features/settings/models/device_color.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
@@ -18,6 +19,14 @@ class DeviceFrame extends ConsumerWidget {
     final DeviceColor deviceColor = ref.watch(
       settingsPreferencesControllerProvider.select((e) => e.deviceColor),
     );
+    final position = ref.watch(
+      libraryExperienceProvider.select((e) => e.wheelPosition),
+    );
+    final (topFlex, bottomFlex) = switch (position) {
+      WheelPosition.normal => (2, 1),
+      WheelPosition.higher => (1, 2),
+      WheelPosition.lower => (3, 1),
+    };
     final deviceColorStyle = deviceColor.style;
     final solidFrameColor = deviceColorStyle.solidFrameColor;
 
@@ -102,9 +111,9 @@ class DeviceFrame extends ConsumerWidget {
                 child: Column(
                   children: [
                     DeviceScreen(key: deviceScreenGlobalKey, child: child),
-                    const Spacer(flex: 2),
+                    Spacer(flex: topFlex),
                     DeviceControls(key: deviceControlsGlobalKey),
-                    const Spacer(),
+                    Spacer(flex: bottomFlex),
                   ],
                 ),
               ),
