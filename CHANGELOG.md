@@ -1,3 +1,8 @@
+## Switchable first-generation wheel (unreleased)
+
+- Add a first-generation-inspired segmented wheel style with independent colors.
+- Preserve wheel controls, color, feedback preferences and existing player data.
+
 ## First-generation screen theme (unreleased)
 
 - Add a selectable pale monochrome LCD theme with a single-column menu.

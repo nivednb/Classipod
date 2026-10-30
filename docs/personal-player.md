@@ -128,3 +128,10 @@ Settings → Theme cycles through Light, Dark and First generation. The latter
 uses a pale LCD palette and single-column menu inspired by the 2001 iPod. It
 does not change the saved split-screen preference, so changing themes restores
 the user's previous layout. Wheel color and labels remain independently chosen.
+
+## Wheel style
+
+Settings → Library & Wheel → Wheel style switches between the current wheel
+and a first-generation-inspired wheel with four outlined outer buttons. Both
+styles use the same wheel color and label color, controls, sound and preferences.
+The original iPod had a physical wheel; touch behavior is an approximation.

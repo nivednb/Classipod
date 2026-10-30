@@ -12,6 +12,7 @@ import 'package:classipod/core/services/click_sound_service.dart';
 import 'package:classipod/features/device/models/device_action.dart';
 import 'package:classipod/features/device/models/wheel_motion.dart';
 import 'package:classipod/features/device/services/device_buttons_service_provider.dart';
+import 'package:classipod/features/device/widgets/first_generation_wheel_painter.dart';
 import 'package:classipod/features/menu/controller/split_screen_controller.dart';
 import 'package:classipod/features/settings/controller/library_experience_controller.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
@@ -162,186 +163,193 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
               radiansPerStep,
               experience.acceleratedWheel,
             ),
-            child: Container(
-              height: screenWidth * clickWheelRadiusRatio,
-              width: screenWidth * clickWheelRadiusRatio,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: wheelColor,
-              ),
-              clipBehavior: Clip.hardEdge,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async => ref
-                          .read(deviceButtonsServiceProvider.notifier)
-                          .setDeviceAction(DeviceAction.menu),
-                      onLongPress: () async {
-                        await Future.wait([
-                          ref
-                              .read(deviceButtonsServiceProvider.notifier)
-                              .buttonPressVibrate(),
-                          ref
-                              .read(deviceButtonsServiceProvider.notifier)
-                              .clickWheelSound(),
-                        ]);
-                        if (context.mounted) {
-                          context.goNamed(Routes.menu.name);
-                          if (!ref
-                              .read(splitScreenViewControllerProvider)
-                              .isScreenVisible) {
-                            unawaited(
-                              ref
-                                  .read(splitScreenViewControllerProvider)
-                                  .openSplitView(),
-                            );
+            child: CustomPaint(
+              foregroundPainter:
+                  experience.wheelStyle == WheelStyle.firstGeneration
+                  ? FirstGenerationWheelPainter(wheelColor)
+                  : null,
+              child: Container(
+                height: screenWidth * clickWheelRadiusRatio,
+                width: screenWidth * clickWheelRadiusRatio,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: wheelColor,
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async => ref
+                            .read(deviceButtonsServiceProvider.notifier)
+                            .setDeviceAction(DeviceAction.menu),
+                        onLongPress: () async {
+                          await Future.wait([
+                            ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .buttonPressVibrate(),
+                            ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .clickWheelSound(),
+                          ]);
+                          if (context.mounted) {
+                            context.goNamed(Routes.menu.name);
+                            if (!ref
+                                .read(splitScreenViewControllerProvider)
+                                .isScreenVisible) {
+                              unawaited(
+                                ref
+                                    .read(splitScreenViewControllerProvider)
+                                    .openSplitView(),
+                              );
+                            }
                           }
-                        }
-                      },
-                      child: ColoredBox(
-                        color: wheelColor,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Text(
-                            context.localization.menuButtonText,
-                            key: menuButtonGlobalKey,
-                            style: TextStyle(
-                              color: labelColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                        },
+                        child: ColoredBox(
+                          color: wheelColor,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Text(
+                              context.localization.menuButtonText,
+                              key: menuButtonGlobalKey,
+                              style: TextStyle(
+                                color: labelColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        key: previousButtonGlobalKey,
-                        child: GestureDetector(
-                          onTap: () async => ref
-                              .read(deviceButtonsServiceProvider.notifier)
-                              .setDeviceAction(DeviceAction.seekBackward),
-                          onLongPress: () async => ref
-                              .read(deviceButtonsServiceProvider.notifier)
-                              .setDeviceAction(
-                                DeviceAction.seekBackwardLongPress,
-                              ),
-                          onLongPressEnd: (_) async => ref
-                              .read(deviceButtonsServiceProvider.notifier)
-                              .setDeviceAction(DeviceAction.longPressEnd),
-                          child: SizedBox(
-                            height: screenWidth * 0.2175,
-                            child: ColoredBox(
-                              color: wheelColor,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: CustomPaint(
-                                  size: const Size(20, 10),
-                                  painter: PreviousButtonCustomPainter(
-                                    color: iconColor,
+                    Row(
+                      children: [
+                        Expanded(
+                          key: previousButtonGlobalKey,
+                          child: GestureDetector(
+                            onTap: () async => ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .setDeviceAction(DeviceAction.seekBackward),
+                            onLongPress: () async => ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .setDeviceAction(
+                                  DeviceAction.seekBackwardLongPress,
+                                ),
+                            onLongPressEnd: (_) async => ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .setDeviceAction(DeviceAction.longPressEnd),
+                            child: SizedBox(
+                              height: screenWidth * 0.2175,
+                              child: ColoredBox(
+                                color: wheelColor,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CustomPaint(
+                                    size: const Size(20, 10),
+                                    painter: PreviousButtonCustomPainter(
+                                      color: iconColor,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        key: centerButtonGlobalKey,
-                        onTap: () async => ref
-                            .read(deviceButtonsServiceProvider.notifier)
-                            .setDeviceAction(DeviceAction.select),
-                        onLongPress: () async => ref
-                            .read(deviceButtonsServiceProvider.notifier)
-                            .setDeviceAction(DeviceAction.selectLongPress),
-                        onLongPressEnd: (_) async => ref
-                            .read(deviceButtonsServiceProvider.notifier)
-                            .setDeviceAction(DeviceAction.longPressEnd),
-                        child: SizedBox(
-                          height: screenWidth * selectButtonRadiusRatio,
-                          width: screenWidth * selectButtonRadiusRatio,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: deviceColorStyle.controlBorderColor,
-                              ),
-                              image: const DecorationImage(
-                                image: AssetImage(Assets.noiseImage),
-                                fit: BoxFit.cover,
-                              ),
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors:
-                                    experience.wheelColor == WheelColor.device
-                                    ? deviceColorStyle.innerButtonGradientColors
-                                    : [wheelColor, wheelColor],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        key: nextButtonGlobalKey,
-                        child: GestureDetector(
+                        GestureDetector(
+                          key: centerButtonGlobalKey,
                           onTap: () async => ref
                               .read(deviceButtonsServiceProvider.notifier)
-                              .setDeviceAction(DeviceAction.seekForward),
+                              .setDeviceAction(DeviceAction.select),
                           onLongPress: () async => ref
                               .read(deviceButtonsServiceProvider.notifier)
-                              .setDeviceAction(
-                                DeviceAction.seekForwardLongPress,
-                              ),
+                              .setDeviceAction(DeviceAction.selectLongPress),
                           onLongPressEnd: (_) async => ref
                               .read(deviceButtonsServiceProvider.notifier)
                               .setDeviceAction(DeviceAction.longPressEnd),
                           child: SizedBox(
                             height: screenWidth * selectButtonRadiusRatio,
-                            child: ColoredBox(
-                              color: wheelColor,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: CustomPaint(
-                                  size: const Size(20, 10),
-                                  painter: NextButtonCustomPainter(
-                                    color: iconColor,
+                            width: screenWidth * selectButtonRadiusRatio,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: deviceColorStyle.controlBorderColor,
+                                ),
+                                image: const DecorationImage(
+                                  image: AssetImage(Assets.noiseImage),
+                                  fit: BoxFit.cover,
+                                ),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors:
+                                      experience.wheelColor == WheelColor.device
+                                      ? deviceColorStyle
+                                            .innerButtonGradientColors
+                                      : [wheelColor, wheelColor],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          key: nextButtonGlobalKey,
+                          child: GestureDetector(
+                            onTap: () async => ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .setDeviceAction(DeviceAction.seekForward),
+                            onLongPress: () async => ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .setDeviceAction(
+                                  DeviceAction.seekForwardLongPress,
+                                ),
+                            onLongPressEnd: (_) async => ref
+                                .read(deviceButtonsServiceProvider.notifier)
+                                .setDeviceAction(DeviceAction.longPressEnd),
+                            child: SizedBox(
+                              height: screenWidth * selectButtonRadiusRatio,
+                              child: ColoredBox(
+                                color: wheelColor,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: CustomPaint(
+                                    size: const Size(20, 10),
+                                    painter: NextButtonCustomPainter(
+                                      color: iconColor,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async => ref
-                          .read(deviceButtonsServiceProvider.notifier)
-                          .playPauseButtonClick(),
-                      child: ColoredBox(
-                        color: wheelColor,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: CustomPaint(
-                            key: playPauseButtonGlobalKey,
-                            size: const Size(26, 12),
-                            painter: PlayPauseButtonCustomPainter(
-                              color: iconColor,
+                      ],
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async => ref
+                            .read(deviceButtonsServiceProvider.notifier)
+                            .playPauseButtonClick(),
+                        child: ColoredBox(
+                          color: wheelColor,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: CustomPaint(
+                              key: playPauseButtonGlobalKey,
+                              size: const Size(26, 12),
+                              painter: PlayPauseButtonCustomPainter(
+                                color: iconColor,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

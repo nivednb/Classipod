@@ -34,6 +34,7 @@ void main() {
       await settings.toggleFeedback();
       await settings.cycleWheelColor();
       await settings.cycleWheelLabelColor();
+      await settings.toggleWheelStyle();
       first.dispose();
       final restored = create();
       addTearDown(restored.dispose);
@@ -44,6 +45,7 @@ void main() {
       expect(value.wheelFeedback, WheelFeedback.crisp);
       expect(value.wheelColor, WheelColor.red);
       expect(value.wheelLabelColor, WheelLabelColor.white);
+      expect(value.wheelStyle, WheelStyle.firstGeneration);
     },
   );
 }
