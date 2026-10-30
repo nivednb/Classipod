@@ -18,7 +18,9 @@ class StatusBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkTheme =
         CupertinoTheme.of(context).brightness == Brightness.dark;
-    final gradient = isDarkTheme
+    final gradient = context.isFirstGenerationTheme
+        ? IpodGradients.firstGenerationStatusBar
+        : isDarkTheme
         ? IpodGradients.darkStatusBar
         : IpodGradients.statusBar;
     final borderColor = isDarkTheme
@@ -55,7 +57,9 @@ class StatusBar extends StatelessWidget {
                     isPlaying
                         ? CupertinoIcons.play_fill
                         : CupertinoIcons.pause_fill,
-                    color: AppPalette.playbackIcon,
+                    color: context.isFirstGenerationTheme
+                        ? AppPalette.firstGenerationInk
+                        : AppPalette.playbackIcon,
                   );
                 },
               ),

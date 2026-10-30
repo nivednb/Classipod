@@ -1,5 +1,6 @@
 import 'package:battery_plus/battery_plus.dart';
 import 'package:classipod/core/constants/app_palette.dart';
+import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/theme/ipod_gradients.dart';
 import 'package:classipod/features/status_bar/controller/battery_controller.dart';
 import 'package:classipod/features/status_bar/model/battery_model.dart';
@@ -94,7 +95,9 @@ class BatteryIndicatorWidget extends StatelessWidget {
         height: double.infinity,
         curve: curve,
         decoration: BoxDecoration(
-          gradient: batteryDetails.level <= 20
+          gradient: context.isFirstGenerationTheme
+              ? IpodGradients.firstGenerationSelection
+              : batteryDetails.level <= 20
               ? IpodGradients.lowBattery
               : IpodGradients.battery,
         ),

@@ -145,6 +145,11 @@ class AppPalette {
   );
   static const Color brownDeviceButtonAccentColor = Color(0xFFEDE0D4);
 
+  // Pale monochrome LCD inspired by the original iPod display.
+  static const Color firstGenerationBackground = Color(0xFFD0DFF2);
+  static const Color firstGenerationInk = Color(0xFF27323F);
+  static const Color firstGenerationSelection = Color(0xFF414B58);
+
   static const Color darkScreenBackground = Color(0xFF202020);
   static const Color darkSurface = Color(0xFF292929);
   static const Color darkPrimaryText = Color(0xFFE8EAED);

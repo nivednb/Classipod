@@ -5,7 +5,8 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 
 enum AppTheme {
   light,
-  dark;
+  dark,
+  firstGeneration;
 
   static AppTheme fromName(String value) {
     return AppTheme.values.firstWhere(
@@ -20,6 +21,8 @@ enum AppTheme {
         return context.localization.lightThemeTitle;
       case AppTheme.dark:
         return context.localization.darkThemeTitle;
+      case AppTheme.firstGeneration:
+        return 'First generation';
     }
   }
 
@@ -40,6 +43,24 @@ enum AppTheme {
             ),
             textStyle: IpodTypography.body.copyWith(
               color: CupertinoColors.black,
+            ),
+          ),
+        );
+      case AppTheme.firstGeneration:
+        return CupertinoThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: AppPalette.firstGenerationBackground,
+          barBackgroundColor: AppPalette.firstGenerationBackground,
+          primaryColor: AppPalette.firstGenerationInk,
+          textTheme: CupertinoTextThemeData(
+            navTitleTextStyle: IpodTypography.screenTitle.copyWith(
+              color: AppPalette.firstGenerationInk,
+            ),
+            navLargeTitleTextStyle: IpodTypography.title.copyWith(
+              color: AppPalette.firstGenerationInk,
+            ),
+            textStyle: IpodTypography.body.copyWith(
+              color: AppPalette.firstGenerationInk,
             ),
           ),
         );

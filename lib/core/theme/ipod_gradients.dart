@@ -1,9 +1,12 @@
 import 'package:classipod/core/constants/app_palette.dart';
+import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 
 abstract final class IpodGradients {
   static LinearGradient selectionFor(BuildContext context) =>
-      CupertinoTheme.of(context).brightness == Brightness.dark
+      context.isFirstGenerationTheme
+      ? firstGenerationSelection
+      : CupertinoTheme.of(context).brightness == Brightness.dark
       ? darkSelection
       : selection;
 
@@ -11,6 +14,20 @@ abstract final class IpodGradients {
       CupertinoTheme.of(context).brightness == Brightness.dark
       ? darkSplitPreview
       : splitPreview;
+
+  static const LinearGradient firstGenerationSelection = LinearGradient(
+    colors: [
+      AppPalette.firstGenerationSelection,
+      AppPalette.firstGenerationSelection,
+    ],
+  );
+
+  static const LinearGradient firstGenerationStatusBar = LinearGradient(
+    colors: [
+      AppPalette.firstGenerationBackground,
+      AppPalette.firstGenerationBackground,
+    ],
+  );
 
   static const LinearGradient darkSelection = LinearGradient(
     begin: Alignment.topCenter,

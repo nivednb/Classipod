@@ -121,3 +121,10 @@ Vibrate are controlled by their existing Settings switches. On the web, click
 audio is unlocked by a wheel gesture and may depend on the device audio mode.
 Native iOS uses platform haptics; Safari does not expose general vibration for
 wheel detents. iPhone sound and haptics require physical-device validation.
+
+## First-generation screen theme
+
+Settings → Theme cycles through Light, Dark and First generation. The latter
+uses a pale LCD palette and single-column menu inspired by the 2001 iPod. It
+does not change the saved split-screen preference, so changing themes restores
+the user's previous layout. Wheel color and labels remain independently chosen.

@@ -1,3 +1,8 @@
+## First-generation screen theme (unreleased)
+
+- Add a selectable pale monochrome LCD theme with a single-column menu.
+- Preserve the existing themes and independent wheel color preferences.
+
 ## Personal wheel feedback and colors (unreleased)
 
 - Add separate persistent wheel color and black/white label options.

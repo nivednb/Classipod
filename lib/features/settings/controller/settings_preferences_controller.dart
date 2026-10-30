@@ -306,9 +306,8 @@ class SettingsPreferencesControllerNotifier
   }
 
   Future<void> toggleAppTheme() async {
-    final AppTheme updatedTheme = state.appTheme == AppTheme.light
-        ? AppTheme.dark
-        : AppTheme.light;
+    final AppTheme updatedTheme =
+        AppTheme.values[(state.appTheme.index + 1) % AppTheme.values.length];
     state = state.copyWith(appTheme: updatedTheme);
     await ref
         .read(settingsPreferencesRepositoryProvider)

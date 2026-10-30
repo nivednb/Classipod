@@ -1,4 +1,5 @@
 import 'package:classipod/core/constants/app_color_scheme.dart';
+import 'package:classipod/core/constants/app_palette.dart';
 import 'package:classipod/l10n/generated/app_localizations.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:go_router/go_router.dart';
@@ -20,12 +21,20 @@ extension BuildContextExtensions on BuildContext {
 }
 
 extension BuildContextColorExtensions on BuildContext {
-  Color get appBackgroundColor =>
-      AppColorScheme.screenBackground.resolveFrom(this);
+  bool get isFirstGenerationTheme =>
+      CupertinoTheme.of(this).primaryColor == AppPalette.firstGenerationInk;
 
-  Color get appSurfaceColor => AppColorScheme.surface.resolveFrom(this);
+  Color get appBackgroundColor => isFirstGenerationTheme
+      ? AppPalette.firstGenerationBackground
+      : AppColorScheme.screenBackground.resolveFrom(this);
 
-  Color get appPrimaryTextColor => AppColorScheme.primaryText.resolveFrom(this);
+  Color get appSurfaceColor => isFirstGenerationTheme
+      ? AppPalette.firstGenerationBackground
+      : AppColorScheme.surface.resolveFrom(this);
+
+  Color get appPrimaryTextColor => isFirstGenerationTheme
+      ? AppPalette.firstGenerationInk
+      : AppColorScheme.primaryText.resolveFrom(this);
 
   Color get appSecondaryTextColor =>
       AppColorScheme.secondaryText.resolveFrom(this);

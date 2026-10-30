@@ -32,7 +32,7 @@ class DisplayListTile extends StatelessWidget {
         width: double.infinity,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: isSelected
+            border: isSelected && !context.isFirstGenerationTheme
                 ? const Border(
                     top: BorderSide(
                       color: AppPalette.selectedTileTopBorderColor,

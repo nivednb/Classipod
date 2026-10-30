@@ -60,15 +60,16 @@ class _DeviceScreenContentState extends ConsumerState<DeviceScreenContent>
               (settings) => settings.splitScreenEnabled,
             ),
           );
+          final useSplit = splitEnabled && !context.isFirstGenerationTheme;
           final header = _Header(
             title: _title(context, ref, state),
-            split: splitEnabled && _usesSplitScreen(state),
+            split: useSplit && _usesSplitScreen(state),
             visible: state.name != Routes.splash.name,
             delayedEntrance:
                 state.name == Routes.coverFlow.name ||
                 state.name == Routes.nowPlaying.name,
             splitController:
-                splitEnabled &&
+                useSplit &&
                     _usesSplitScreen(state) &&
                     state.name != Routes.sleepTimer.name
                 ? ref.read(splitScreenViewControllerProvider)
