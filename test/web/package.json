@@ -5,6 +5,7 @@
     "test": "node --test browser_library.test.cjs service_worker.test.cjs"
   },
   "devDependencies": {
-    "fake-indexeddb": "^6.2.6"
+    "fake-indexeddb": "^6.2.6",
+    "jsmediatags": "^3.9.7"
   }
 }

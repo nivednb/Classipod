@@ -24,6 +24,11 @@ Future<List<MusicMetadata>> readBrowserSongs() async {
         filePath: row['path'] as String,
         contentUri: row['url'] as String,
         trackName: row['title'] as String,
+        trackArtistNames: row['artist'] == null
+            ? null
+            : [row['artist'] as String],
+        albumName: row['album'] as String?,
+        thumbnailPath: row['artwork'] as String?,
         mimeType: row['mime'] as String?,
       ),
   ];

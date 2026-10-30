@@ -52,8 +52,7 @@ class BigCoverFlowCarousel extends StatelessWidget {
                 imageWidth: 180,
                 thumbnailPath: albums[index].albumArtPath,
                 isOnDevice: albums[index].isOnDevice(),
-                heroTag:
-                    "${albums[index].albumName}-${albums[index].albumArtistName}",
+                heroTag: albums[index].coverFlowHeroTag,
               ),
             ),
           );

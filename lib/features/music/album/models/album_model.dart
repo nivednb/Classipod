@@ -14,6 +14,16 @@ class AlbumModel {
     required this.albumSongs,
   });
 
+  /// Stable unique tag for individual imported tracks without album tags.
+  String get coverFlowHeroTag {
+    final song = albumSongs.firstOrNull;
+    if ((song?.songId?.startsWith('browser:') ?? false) &&
+        (song?.albumName == null || song!.albumName!.trim().isEmpty)) {
+      return 'browser-song:${song!.identity}';
+    }
+    return '$albumName-$albumArtistName';
+  }
+
   AlbumModel copyWith({
     String? albumName,
     String? albumArtPath,

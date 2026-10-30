@@ -2,6 +2,10 @@ import 'package:classipod/core/models/music_metadata.dart';
 
 String albumIdentityOf(MusicMetadata metadata) {
   final albumName = metadata.getAlbumName.trim().toLowerCase();
+  if ((metadata.songId?.startsWith('browser:') ?? false) &&
+      (metadata.albumName == null || metadata.albumName!.trim().isEmpty)) {
+    return 'browser-song:${metadata.identity}';
+  }
   final primaryArtist = metadata.songId == null
       ? metadata.getPrimaryAlbumArtistName.trim().toLowerCase()
       : (metadata.albumArtistNames ?? metadata.trackArtistNames ?? [])

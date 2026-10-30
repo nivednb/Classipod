@@ -89,8 +89,10 @@ apps may have separate storage on iOS.
 
 Music → Folders → Import songs from Files copies selected audio into this
 site's IndexedDB on the device. Music is never uploaded to the repository.
-Imports use filenames as titles; embedded artist/album artwork extraction is
-not implemented in the web importer. Selecting the same filename again replaces
+Imports read embedded title, artist, album and artwork locally when available.
+Files without readable tags use their filename as a title; a trailing video ID
+is hidden in the displayed title while the stored file identity stays unchanged.
+Browser songs without album tags appear as separate Cover Flow cards. Selecting the same filename again replaces
 that entry. iPhone's Files picker usually provides individual files, so a folder
 hierarchy is not promised there. Supported playback formats depend on Safari;
 start with MP3 or M4A.

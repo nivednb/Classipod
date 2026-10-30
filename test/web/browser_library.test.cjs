@@ -5,12 +5,12 @@ const vm = require('node:vm');
 const {IDBFactory} = require('fake-indexeddb');
 const source = readFileSync(require('node:path').join(__dirname, '../../web/browser_library.js'), 'utf8');
 
-function page(indexedDB = new IDBFactory()) {
+function page(indexedDB = new IDBFactory(), metadataReader = null) {
   const inputs = [];
   let serial = 0;
   const revoked = [];
   const context = {
-    indexedDB, navigator: {}, window: {},
+    indexedDB, navigator: {}, window: {jsmediatags: metadataReader}, Blob,
     URL: {createObjectURL: () => `blob:page-${Math.random()}-${++serial}`,
       revokeObjectURL: url => revoked.push(url)},
     document: {
@@ -76,4 +76,30 @@ test('cancel releases the picker and nested paths remain distinct', async () => 
 test('database failure rejects import instead of claiming files were saved', async () => {
   const app = page({open() {throw new Error('storage unavailable');}});
   await assert.rejects(app.importFiles([song('a.mp3')]), /storage unavailable/);
+});
+
+
+test('uses embedded metadata and artwork without changing stored song IDs', async () => {
+  const reader = {read(blob, callbacks) { callbacks.onSuccess({tags: {
+    title: 'Malayalam song', artist: 'Artist', album: 'Album',
+    picture: {format: 'image/jpeg', data: [1, 2, 3]},
+  }}); }};
+  const app = page(new IDBFactory(), reader);
+  await app.importFiles([song('Song [abcdefghijk].m4a')]);
+  const row = JSON.parse(await app.api.list())[0];
+  assert.equal(row.id, 'browser:/Browser Music/Song [abcdefghijk].m4a');
+  assert.equal(row.title, 'Malayalam song');
+  assert.equal(row.artist, 'Artist');
+  assert.equal(row.album, 'Album');
+  assert.match(row.artwork, /^blob:/);
+  await app.importFiles([song('Song [abcdefghijk].m4a', 'replacement')]);
+  assert.ok(app.revoked.includes(row.artwork));
+});
+
+test('hides video ID only in display title', async () => {
+  const app = page();
+  await app.importFiles([song('Title [abcdefghijk].m4a')]);
+  const row = JSON.parse(await app.api.list())[0];
+  assert.equal(row.title, 'Title');
+  assert.match(row.id, /\[abcdefghijk\]/);
 });

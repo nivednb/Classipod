@@ -6,7 +6,7 @@ enum CoverFlowAppearance {
   big;
 
   static CoverFlowAppearance fromName(String value) =>
-      values.firstWhere((item) => item.name == value, orElse: () => original);
+      values.firstWhere((item) => item.name == value, orElse: () => big);
 
   String title(BuildContext context) => switch (this) {
     original => context.localization.coverFlowOriginalTitle,

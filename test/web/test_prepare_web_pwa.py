@@ -46,6 +46,17 @@ class PwaTests(unittest.TestCase):
             pwa.prepare(root)
             self.assertEqual(first, (root / 'personal-player-sw.js').read_text())
 
+    def test_rebuild_replaces_existing_content_addressed_entrypoint(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for _ in range(2):
+                (root / 'index.html').write_text('<script src="flutter_bootstrap.js"></script>')
+                (root / 'main.dart.js').write_text('same player code')
+                (root / 'flutter_bootstrap.js').write_text('load("main.dart.js")')
+                pwa.prepare(root)
+            self.assertEqual(len(list(root.glob('main.*.dart.js'))), 1)
+            self.assertIn('flutter_bootstrap.', (root / 'index.html').read_text())
+
     def test_manifest_assets_exist_with_exact_case(self):
         manifest = json.loads((ROOT / 'web/manifest.json').read_text())
         self.assertEqual(manifest['display'], 'standalone')

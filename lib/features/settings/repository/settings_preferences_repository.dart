@@ -97,7 +97,7 @@ class SettingsPreferencesRepository {
     return _sharedPreferencesWithCache.getString(
           SharedPreferencesKeys.coverFlowAppearance.name,
         ) ??
-        CoverFlowAppearance.original.name;
+        CoverFlowAppearance.big.name;
   }
 
   Future<void> setCoverFlowAppearance(CoverFlowAppearance appearance) {
@@ -111,7 +111,7 @@ class SettingsPreferencesRepository {
     return _sharedPreferencesWithCache.getString(
           SharedPreferencesKeys.appTheme.name,
         ) ??
-        AppTheme.light.name;
+        AppTheme.dark.name;
   }
 
   bool getImmersiveMode() {

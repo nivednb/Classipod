@@ -58,12 +58,47 @@
       const old = objectUrls.get(id);
       if (old) URL.revokeObjectURL(old);
       objectUrls.delete(id);
+      const art = artworkUrls.get(id);
+      if (art) URL.revokeObjectURL(art);
+      artworkUrls.delete(id);
+      tagsById.delete(id);
     }
     // This is a request, not a guarantee of permanent storage on iOS.
     if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
     return new Set(audio.map(file => normalizePath(file.webkitRelativePath || file.name))).size;
   }
 
+  const tagsById = new Map();
+  const artworkUrls = new Map();
+  function readTags(row) {
+    if (tagsById.has(row.id)) return tagsById.get(row.id);
+    const promise = new Promise(resolve => {
+      if (!window.jsmediatags) return resolve({});
+      try {
+        window.jsmediatags.read(row.blob, {
+          onSuccess(result) {
+            const t = result.tags || {};
+            let artwork;
+            try {
+              if (t.picture && t.picture.data && t.picture.data.length) {
+                artwork = URL.createObjectURL(new Blob([new Uint8Array(t.picture.data)],
+                  {type: t.picture.format || 'image/jpeg'}));
+                artworkUrls.set(row.id, artwork);
+              }
+            } catch (_) {
+              // A malformed picture must never prevent the music library loading.
+            }
+            resolve({title: typeof t.title === 'string' ? t.title : null,
+              artist: typeof t.artist === 'string' ? t.artist : null,
+              album: typeof t.album === 'string' ? t.album : null, artwork});
+          },
+          onError() { resolve({}); },
+        });
+      } catch (_) { resolve({}); }
+    });
+    tagsById.set(row.id, promise);
+    return promise;
+  }
   async function list() {
     const db = await openDatabase();
     const rows = await new Promise((resolve, reject) => {
@@ -71,11 +106,22 @@
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
-    return JSON.stringify(rows.map(row => {
-      if (!objectUrls.has(row.id)) objectUrls.set(row.id, URL.createObjectURL(row.blob));
-      return {id: row.id, path: row.path, mime: row.mime,
-        title: row.name.replace(audioExtension, ''), url: objectUrls.get(row.id)};
-    }));
+    const result = new Array(rows.length);
+    let next = 0;
+    async function worker() {
+      while (next < rows.length) {
+        const index = next++;
+        const row = rows[index];
+        if (!objectUrls.has(row.id)) objectUrls.set(row.id, URL.createObjectURL(row.blob));
+        const tags = await readTags(row);
+        result[index] = {id: row.id, path: row.path, mime: row.mime,
+          title: tags.title || row.name.replace(audioExtension, '').replace(/\s*\[[A-Za-z0-9_-]{11}\]$/, ''),
+          artist: tags.artist, album: tags.album, artwork: tags.artwork,
+          url: objectUrls.get(row.id)};
+      }
+    }
+    await Promise.all(Array.from({length: Math.min(4, rows.length)}, worker));
+    return JSON.stringify(result);
   }
 
   function importSongs() {

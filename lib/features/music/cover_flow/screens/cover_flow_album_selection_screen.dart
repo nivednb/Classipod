@@ -88,8 +88,7 @@ class _CoverFlowAlbumSelectionScreenState
         .watch(nowPlayingDetailsProvider.select((e) => e.currentMetadata))
         ?.identity;
     return Hero(
-      tag:
-          "${widget.albumDetail.albumName}-${widget.albumDetail.albumArtistName}",
+      tag: widget.albumDetail.coverFlowHeroTag,
       placeholderBuilder: (_, size, child) => SizedBox.fromSize(
         size: size,
         child: Offstage(child: TickerMode(enabled: false, child: child)),

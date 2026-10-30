@@ -52,7 +52,12 @@ List<AlbumModel> buildAlbumDetails(Iterable<MusicMetadata> metadataList) {
         .firstOrNull;
 
     return AlbumModel(
-      albumName: albumSongs.first.getAlbumName,
+      albumName:
+          (albumSongs.first.songId?.startsWith('browser:') ?? false) &&
+              (albumSongs.first.albumName == null ||
+                  albumSongs.first.albumName!.trim().isEmpty)
+          ? albumSongs.first.getTrackName
+          : albumSongs.first.getAlbumName,
       albumArtPath: albumArtPath,
       albumArtistName: albumArtists.join(
         albumSongs.first.songId == null ? ', ' : '; ',

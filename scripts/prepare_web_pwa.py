@@ -13,7 +13,7 @@ def prepare(root: Path) -> None:
     index = root / 'index.html'
     if main.exists() and bootstrap.exists():
         main_name = 'main.' + hashlib.sha256(main.read_bytes()).hexdigest()[:16] + '.dart.js'
-        main.rename(root / main_name)
+        main.replace(root / main_name)
         script = bootstrap.read_text().replace('main.dart.js', main_name)
         bootstrap_name = 'flutter_bootstrap.' + hashlib.sha256(script.encode()).hexdigest()[:16] + '.js'
         (root / bootstrap_name).write_text(script)

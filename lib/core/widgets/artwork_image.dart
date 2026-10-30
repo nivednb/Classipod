@@ -30,7 +30,9 @@ ImageProvider artworkImage(WidgetRef ref, String? path) {
     final bytes = ref.watch(remoteArtworkProvider(path)).value;
     return bytes == null ? fallback : MemoryImage(bytes);
   }
-  if (uri?.scheme == 'http' || uri?.scheme == 'https') {
+  if (uri?.scheme == 'http' ||
+      uri?.scheme == 'https' ||
+      uri?.scheme == 'blob') {
     return NetworkImage(path);
   }
   return fileArtwork(path);

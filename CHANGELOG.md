@@ -1,3 +1,11 @@
+## Personal web player visual update (unreleased)
+
+- Use red-and-charcoal dark menus and larger Cover Flow by default for new installs.
+- Read embedded audio titles, artists, albums and artwork locally in the web player.
+- Show untagged browser songs as individual Cover Flow cards and hide trailing
+  video IDs in displayed titles without changing saved identities or playlists.
+- Preserve existing browser audio and playlist storage; no songs are uploaded.
+
 ## Home Screen player (unreleased)
 
 - Publish the personal player through GitHub Pages with standalone iPhone metadata.
