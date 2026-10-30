@@ -35,8 +35,15 @@ class DeviceButtonsServiceNotifier extends Notifier<DeviceAction?> {
   }
 
   Future<void> buttonPressVibrate() async {
-    if (ref.read(settingsPreferencesControllerProvider).vibrate &&
-        (kIsWeb || Platform.isAndroid || Platform.isIOS)) {
+    if (!ref.read(settingsPreferencesControllerProvider).vibrate) return;
+    if (!kIsWeb && Platform.isIOS) {
+      if (ref.read(libraryExperienceProvider).wheelFeedback ==
+          WheelFeedback.soft) {
+        await HapticFeedback.selectionClick();
+      } else {
+        await HapticFeedback.lightImpact();
+      }
+    } else if (kIsWeb || Platform.isAndroid) {
       await Vibration.vibrate(duration: 5);
     }
   }

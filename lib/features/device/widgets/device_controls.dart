@@ -8,6 +8,7 @@ import 'package:classipod/core/custom_painter/play_pause_button_custom_painter.d
 import 'package:classipod/core/custom_painter/previous_button_custom_painter.dart';
 import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/navigation/routes.dart';
+import 'package:classipod/core/services/click_sound_service.dart';
 import 'package:classipod/features/device/models/device_action.dart';
 import 'package:classipod/features/device/models/wheel_motion.dart';
 import 'package:classipod/features/device/services/device_buttons_service_provider.dart';
@@ -102,6 +103,24 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
     }
 
     final experience = ref.watch(libraryExperienceProvider);
+    final wheelColor = switch (experience.wheelColor) {
+      WheelColor.device => deviceColorStyle.controlBackgroundColor,
+      WheelColor.red => const Color(0xFFAA101A),
+      WheelColor.black => const Color(0xFF171717),
+      WheelColor.white => const Color(0xFFF5F5F5),
+      WheelColor.blue => const Color(0xFF2469B3),
+      WheelColor.orange => const Color(0xFFE03800),
+      WheelColor.green => const Color(0xFF298346),
+      WheelColor.purple => const Color(0xFF7635A6),
+    };
+    final labelColor = switch (experience.wheelLabelColor) {
+      WheelLabelColor.device => deviceColorStyle.buttonAccentColor,
+      WheelLabelColor.white => CupertinoColors.white,
+      WheelLabelColor.black => CupertinoColors.black,
+    };
+    final iconColor = experience.wheelLabelColor == WheelLabelColor.device
+        ? deviceColorStyle.buttonIconColor
+        : labelColor;
     final radiansPerStep = switch (clickWheelSensitivity) {
       ClickWheelSensitivity.veryLow => .24,
       ClickWheelSensitivity.low => .18,
@@ -117,6 +136,11 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
           heightFactor: 1,
           child: GestureDetector(
             onPanDown: (details) {
+              if (ref
+                  .read(settingsPreferencesControllerProvider)
+                  .clickWheelSound) {
+                ref.read(clickSoundServiceProvider).primeFromGesture();
+              }
               _motion.reset();
               _gestureClock.reset();
               _gestureClock.start();
@@ -144,7 +168,7 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: deviceColorStyle.controlBackgroundColor,
+                color: wheelColor,
               ),
               clipBehavior: Clip.hardEdge,
               child: Column(
@@ -179,14 +203,14 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                         }
                       },
                       child: ColoredBox(
-                        color: deviceColorStyle.controlBackgroundColor,
+                        color: wheelColor,
                         child: Align(
                           alignment: Alignment.topCenter,
                           child: Text(
                             context.localization.menuButtonText,
                             key: menuButtonGlobalKey,
                             style: TextStyle(
-                              color: deviceColorStyle.buttonAccentColor,
+                              color: labelColor,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -214,13 +238,13 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                           child: SizedBox(
                             height: screenWidth * 0.2175,
                             child: ColoredBox(
-                              color: deviceColorStyle.controlBackgroundColor,
+                              color: wheelColor,
                               child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: CustomPaint(
                                   size: const Size(20, 10),
                                   painter: PreviousButtonCustomPainter(
-                                    color: deviceColorStyle.buttonIconColor,
+                                    color: iconColor,
                                   ),
                                 ),
                               ),
@@ -256,7 +280,9 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors:
-                                    deviceColorStyle.innerButtonGradientColors,
+                                    experience.wheelColor == WheelColor.device
+                                    ? deviceColorStyle.innerButtonGradientColors
+                                    : [wheelColor, wheelColor],
                               ),
                             ),
                           ),
@@ -279,13 +305,13 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                           child: SizedBox(
                             height: screenWidth * selectButtonRadiusRatio,
                             child: ColoredBox(
-                              color: deviceColorStyle.controlBackgroundColor,
+                              color: wheelColor,
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: CustomPaint(
                                   size: const Size(20, 10),
                                   painter: NextButtonCustomPainter(
-                                    color: deviceColorStyle.buttonIconColor,
+                                    color: iconColor,
                                   ),
                                 ),
                               ),
@@ -301,14 +327,14 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                           .read(deviceButtonsServiceProvider.notifier)
                           .playPauseButtonClick(),
                       child: ColoredBox(
-                        color: deviceColorStyle.controlBackgroundColor,
+                        color: wheelColor,
                         child: Align(
                           alignment: Alignment.bottomCenter,
                           child: CustomPaint(
                             key: playPauseButtonGlobalKey,
                             size: const Size(26, 12),
                             painter: PlayPauseButtonCustomPainter(
-                              color: deviceColorStyle.buttonIconColor,
+                              color: iconColor,
                             ),
                           ),
                         ),

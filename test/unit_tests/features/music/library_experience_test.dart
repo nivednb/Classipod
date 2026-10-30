@@ -32,6 +32,8 @@ void main() {
       await settings.setView(SongView.covers);
       await settings.toggleAcceleration();
       await settings.toggleFeedback();
+      await settings.cycleWheelColor();
+      await settings.cycleWheelLabelColor();
       first.dispose();
       final restored = create();
       addTearDown(restored.dispose);
@@ -40,6 +42,8 @@ void main() {
       expect(value.songView, SongView.covers);
       expect(value.acceleratedWheel, false);
       expect(value.wheelFeedback, WheelFeedback.crisp);
+      expect(value.wheelColor, WheelColor.red);
+      expect(value.wheelLabelColor, WheelLabelColor.white);
     },
   );
 }

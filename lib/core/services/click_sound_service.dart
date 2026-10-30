@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:classipod/core/services/wheel_audio_stub.dart'
+    if (dart.library.js_interop) 'package:classipod/core/services/wheel_audio_web.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -31,7 +34,12 @@ class ClickSoundService {
   bool _seeking = false;
   bool _disposed = false;
 
+  void primeFromGesture() {
+    if (kIsWeb && !_disposed) primeWheelAudio();
+  }
+
   Future<void> preload() {
+    if (kIsWeb) return Future.value();
     if (_disposed || _ready) return Future.value();
     return _loading ??= _load();
   }
@@ -48,7 +56,13 @@ class ClickSoundService {
   }
 
   void click() {
-    if (_disposed || _seeking) return;
+    if (_disposed) return;
+    if (kIsWeb) {
+      primeWheelAudio();
+      playWheelAudio();
+      return;
+    }
+    if (_seeking) return;
     if (!_ready) {
       unawaited(preload());
       return;

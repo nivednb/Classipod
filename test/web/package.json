@@ -2,7 +2,7 @@
   "name": "classipod-browser-tests",
   "private": true,
   "scripts": {
-    "test": "node --test browser_library.test.cjs service_worker.test.cjs"
+    "test": "node --test browser_library.test.cjs service_worker.test.cjs wheel_audio.test.cjs"
   },
   "devDependencies": {
     "fake-indexeddb": "^6.2.6",

@@ -112,3 +112,12 @@ Home Screen installation and persistence must be tested on the user's device.
 
 Deployment is handled only by `.github/workflows/personal-web.yaml`; Pages must
 use the GitHub Actions source. No native signing or Apple account is required.
+
+## Wheel appearance and feedback
+
+Settings → Library & Wheel provides independent wheel color and wheel text/icon
+color choices. Device preserves the existing device theme. Click Sound and
+Vibrate are controlled by their existing Settings switches. On the web, click
+audio is unlocked by a wheel gesture and may depend on the device audio mode.
+Native iOS uses platform haptics; Safari does not expose general vibration for
+wheel detents. iPhone sound and haptics require physical-device validation.

@@ -1,3 +1,9 @@
+## Personal wheel feedback and colors (unreleased)
+
+- Add separate persistent wheel color and black/white label options.
+- Use gesture-unlocked Web Audio for click feedback in browser builds.
+- Retain native iPhone haptics; iPhone Safari does not expose general wheel haptics.
+
 ## Personal web player visual update (unreleased)
 
 - Use red-and-charcoal dark menus and larger Cover Flow by default for new installs.

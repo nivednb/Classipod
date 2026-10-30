@@ -28,7 +28,7 @@ class _LibraryExperienceScreenState
   @override
   String get routeName => Routes.libraryExperience.name;
   @override
-  List<int> get displayItems => const [0, 1, 2];
+  List<int> get displayItems => const [0, 1, 2, 3, 4];
 
   @override
   void onSelectPressed() => _select(selectedDisplayItem);
@@ -49,6 +49,10 @@ class _LibraryExperienceScreenState
         unawaited(controller.toggleAcceleration());
       case 2:
         unawaited(controller.toggleFeedback());
+      case 3:
+        unawaited(controller.cycleWheelColor());
+      case 4:
+        unawaited(controller.cycleWheelLabelColor());
     }
   }
 
@@ -60,6 +64,8 @@ class _LibraryExperienceScreenState
       l.songViewSetting,
       l.wheelResponseSetting,
       l.wheelFeedbackSetting,
+      'Wheel color',
+      'Wheel text & icons',
     ];
     final values = [
       songViewTitle(context, settings.songView),
@@ -69,6 +75,8 @@ class _LibraryExperienceScreenState
       settings.wheelFeedback == WheelFeedback.soft
           ? l.wheelFeedbackSoft
           : l.wheelFeedbackCrisp,
+      settings.wheelColor.name,
+      settings.wheelLabelColor.name,
     ];
     return CupertinoPageScaffold(
       child: ListView.builder(
