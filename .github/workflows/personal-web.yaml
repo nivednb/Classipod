@@ -44,7 +44,7 @@ jobs:
       - run: flutter gen-l10n
       - run: flutter analyze --suppress-analytics
       - run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
-      - run: flutter test --no-pub test/unit_tests/cover_flow_wheel_controller_test.dart test/unit_tests/library_languages_test.dart
+      - run: flutter test --no-pub test/unit_tests/cover_flow_wheel_controller_test.dart test/unit_tests/library_languages_test.dart test/unit_tests/features/music/folder_index_test.dart
       - run: flutter build web --release --no-pub --base-href /Classipod/ --no-web-resources-cdn --suppress-analytics
       - run: python3 scripts/prepare_web_pwa.py build/web
       - uses: actions/upload-pages-artifact@v4

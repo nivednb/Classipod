@@ -57,6 +57,21 @@ LocalPlaylistImport parseLocalPlaylist(
       }
     }
     if (song == null) {
+      final id = RegExp(r'\[([A-Za-z0-9_-]{11})\](?:\.[^.]+)?$')
+          .firstMatch(path)
+          ?.group(1);
+      if (id != null) {
+        final matches = index.songsByPath.entries
+            .where(
+              (entry) =>
+                  RegExp('\\[${RegExp.escape(id)}\\](?:\\.[^.]+)?\$')
+                      .hasMatch(entry.key),
+            )
+            .toList();
+        if (matches.length == 1) song = matches.single.value;
+      }
+    }
+    if (song == null) {
       unresolved.add(reference);
     } else {
       songs.add(song);

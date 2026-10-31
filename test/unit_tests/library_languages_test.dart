@@ -12,18 +12,34 @@ void main() {
     );
     expect(categories, containsAll(['Pop', 'Language: Malayalam']));
   });
-  test('recognizes Tamil script but avoids ambiguous multilingual mixes', () {
+  test('recognizes Tamil script and labels multilingual mixes', () {
     expect(
       libraryCategories(MusicMetadata(trackName: 'தமிழ் பாடல்')),
       contains('Language: Tamil'),
     );
     expect(
       libraryCategories(MusicMetadata(trackName: 'Tamil Hindi mashup')),
-      isEmpty,
+      contains('Language: Mix'),
     );
     expect(
       libraryCategories(MusicMetadata(trackName: 'Unknown song')),
       isEmpty,
+    );
+  });
+  test('user-maintained named playlists supply language labels', () {
+    expect(playlistLanguage('M.playlist'), 'Malayalam');
+    expect(playlistLanguage('H.playlist'), 'Hindi');
+    expect(playlistLanguage('E.playlist'), 'English');
+    expect(playlistLanguage('T.playlist'), 'Tamil');
+    expect(playlistLanguage('R.playlist'), isNull);
+    final song = MusicMetadata(trackName: 'Song');
+    expect(
+      libraryCategories(song, playlistLanguages: ['Hindi']),
+      contains('Language: Hindi'),
+    );
+    expect(
+      libraryCategories(song, playlistLanguages: ['Hindi', 'Tamil']),
+      contains('Language: Mix'),
     );
   });
 }

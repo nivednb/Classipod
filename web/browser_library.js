@@ -147,11 +147,34 @@
     });
   }
 
+  function pickPlaylists() {
+    if (pendingPicker) return Promise.reject(new Error('A file picker is already open.'));
+    pendingPicker = true;
+    return new Promise((resolve, reject) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      // No accept filter: iOS Files may otherwise disable M3U8 documents.
+      input.multiple = true;
+      input.hidden = true;
+      document.body.append(input);
+      const cleanup = () => { input.remove(); pendingPicker = false; };
+      input.addEventListener('cancel', () => { cleanup(); resolve('[]'); }, {once: true});
+      input.addEventListener('change', async () => {
+        try {
+          const files = Array.from(input.files).filter(f => /\.m3u8?$/i.test(f.name));
+          resolve(JSON.stringify(await Promise.all(files.map(async f => ({name: f.name, text: await f.text()})))));
+        } catch (error) { reject(error); }
+        finally { cleanup(); }
+      }, {once: true});
+      input.click();
+    });
+  }
+
   async function offlineReady() {
     if (!('serviceWorker' in navigator)) return false;
     const registration = await navigator.serviceWorker.ready;
     return registration.active?.scriptURL.endsWith('/personal-player-sw.js') || false;
   }
 
-  window.classipodLibrary = Object.freeze({list, importSongs, offlineReady});
+  window.classipodLibrary = Object.freeze({list, importSongs, pickPlaylists, offlineReady});
 })();

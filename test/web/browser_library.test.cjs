@@ -104,3 +104,18 @@ test('hides video ID only in display title', async () => {
   assert.equal(row.title, 'Title');
   assert.match(row.id, /\[abcdefghijk\]/);
 });
+
+
+test('playlist picker accepts multiple local M3U files without an iOS filter', async () => {
+  const app = page();
+  const result = app.api.pickPlaylists();
+  const input = app.inputs.at(-1);
+  assert.equal(input.accept, undefined);
+  assert.equal(input.multiple, true);
+  input.files = [Object.assign(new Blob(['#EXTM3U\nSong.m4a']), {name: 'M.playlist.m3u8'}),
+    Object.assign(new Blob(['#EXTM3U\nOther.m4a']), {name: 'H.playlist.m3u8'})];
+  await input.listeners.change();
+  const files = JSON.parse(await result);
+  assert.deepEqual(files.map(file => file.name), ['M.playlist.m3u8', 'H.playlist.m3u8']);
+  assert.match(files[0].text, /Song.m4a/);
+});

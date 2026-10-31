@@ -12,6 +12,19 @@ external JSPromise<JSBoolean> _offlineReady();
 Future<bool> browserOfflineReady() async =>
     (await _offlineReady().toDart).toDart;
 
+@JS('classipodLibrary.pickPlaylists')
+external JSPromise<JSString> _pickPlaylists();
+
+Future<List<Map<String, String>>> pickBrowserPlaylists() async =>
+    (jsonDecode((await _pickPlaylists().toDart).toDart) as List)
+        .map(
+          (row) => <String, String>{
+            'name': row['name'] as String,
+            'text': row['text'] as String,
+          },
+        )
+        .toList();
+
 @JS('classipodLibrary.importSongs')
 external JSPromise<JSNumber> _importSongs();
 

@@ -37,14 +37,28 @@ class PlaylistsNotifier extends Notifier<List<PlaylistModel>> {
     required List<MusicMetadata> songs,
   }) async {
     if (songs.isEmpty) return;
-    final names = _playlistBox.values.map((p) => p.name).toSet();
     final base = name.trim().isEmpty ? 'Imported playlist' : name.trim();
-    var candidate = base;
-    var suffix = 2;
-    while (names.contains(candidate)) {
-      candidate = '$base (${suffix++})';
+    final existing = _playlistBox.values.where((p) => p.name == base).toList();
+    if (existing.length == 1) {
+      final playlist = existing.single;
+      final identities = playlist.songs.map((song) => song.identity).toSet();
+      final additions = <MusicMetadata>[];
+      for (final song in songs) {
+        if (identities.add(song.identity)) additions.add(song);
+      }
+      await _playlistBox.put(
+        playlist.key,
+        playlist.copyWith(songs: [...playlist.songs, ...additions]),
+      );
+    } else {
+      final names = _playlistBox.values.map((p) => p.name).toSet();
+      var candidate = base;
+      var suffix = 2;
+      while (names.contains(candidate)) {
+        candidate = '$base (${suffix++})';
+      }
+      await _playlistBox.add(PlaylistModel(name: candidate, songs: songs));
     }
-    await _playlistBox.add(PlaylistModel(name: candidate, songs: songs));
     refreshProvider();
   }
 

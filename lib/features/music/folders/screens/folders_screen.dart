@@ -114,36 +114,57 @@ class _FoldersScreenState extends ConsumerState<FoldersScreen>
     setState(() => _importing = true);
     String? message;
     try {
-      final result = await FilePicker.pickFile(
-        type: FileType.custom,
-        allowedExtensions: const ['m3u', 'm3u8'],
-      );
-      if (!mounted || result == null) return;
-      final file = result;
-      final path = file.path?.replaceAll('\\', '/');
-      final imported = parseLocalPlaylist(
-        utf8.decode(await file.readAsBytes()),
-        _index,
-        playlistDirectory: path == null || !path.contains('/')
-            ? null
-            : path.substring(0, path.lastIndexOf('/')),
-      );
-      if (imported.songs.isNotEmpty) {
-        await ref
-            .read(playlistsProvider.notifier)
-            .importNamedPlaylist(
-              name: file.name.replaceFirst(
-                RegExp(r'\.m3u8?$', caseSensitive: false),
-                '',
-              ),
-              songs: imported.songs,
-            );
+      final List<({String name, String text, String? directory})> files;
+      if (kIsWeb) {
+        final selected = await pickBrowserPlaylists();
+        files = [
+          for (final file in selected)
+            (name: file['name']!, text: file['text']!, directory: null),
+        ];
+      } else {
+        final file = await FilePicker.pickFile(
+          type: FileType.custom,
+          allowedExtensions: const ['m3u', 'm3u8'],
+        );
+        if (file == null) return;
+        final path = file.path?.replaceAll('\\', '/');
+        files = [
+          (
+            name: file.name,
+            text: utf8.decode(await file.readAsBytes()),
+            directory: path == null || !path.contains('/')
+                ? null
+                : path.substring(0, path.lastIndexOf('/')),
+          ),
+        ];
+      }
+      if (!mounted || files.isEmpty) return;
+      var matched = 0;
+      var missing = 0;
+      for (final file in files) {
+        final imported = parseLocalPlaylist(
+          file.text,
+          _index,
+          playlistDirectory: file.directory,
+        );
+        if (imported.songs.isNotEmpty) {
+          await ref
+              .read(playlistsProvider.notifier)
+              .importNamedPlaylist(
+                name: file.name.replaceFirst(
+                  RegExp(r'\.m3u8?$', caseSensitive: false),
+                  '',
+                ),
+                songs: imported.songs,
+              );
+        }
+        matched += imported.songs.length;
+        missing += imported.unresolved.length;
       }
       if (mounted) {
-        message = context.localization.playlistImportedSummary(
-          imported.songs.length,
-          imported.unresolved.length,
-        );
+        message =
+            '${files.length} playlist(s): $matched matched, $missing not found. '
+            'Import missing songs, then select the same playlist again to add them.';
       }
     } catch (_) {
       if (mounted) message = context.localization.playlistImportFailed;
@@ -260,10 +281,9 @@ class _FoldersScreenState extends ConsumerState<FoldersScreen>
                 onPressed: _importing ? null : _importPlaylist,
                 child: _importing
                     ? const CupertinoActivityIndicator()
-                    : Icon(
-                        CupertinoIcons.doc_append,
-                        semanticLabel: l.importLocalPlaylist,
-                        size: 19,
+                    : const Text(
+                        'Import playlists',
+                        style: TextStyle(fontSize: 12),
                       ),
               ),
               CupertinoButton(

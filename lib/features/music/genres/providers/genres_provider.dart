@@ -3,6 +3,7 @@ import 'package:classipod/core/providers/filtered_audio_files_provider.dart';
 import 'package:classipod/core/utils/album_order.dart';
 import 'package:classipod/core/utils/library_languages.dart';
 import 'package:classipod/core/utils/name_order.dart';
+import 'package:classipod/features/music/genres/providers/playlist_language_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final genresProvider = Provider<List<String>>((ref) {
@@ -18,13 +19,17 @@ final genreCountsProvider =
       final albums = <String, Set<String>>{};
       final songs =
           ref.watch(filteredAudioFilesProvider).value ?? <MusicMetadata>[];
+      final playlistLanguages = ref.watch(playlistLanguagesProvider);
       for (final song in songs) {
         final songArtists = (song.trackArtistNames ?? [])
             .map((name) => name.trim().toLowerCase())
             .where((name) => name.isNotEmpty)
             .toSet();
         if (songArtists.isEmpty) songArtists.add('unknown artist');
-        for (final genre in libraryCategories(song)) {
+        for (final genre in libraryCategories(
+          song,
+          playlistLanguages: playlistLanguages[song.identity] ?? const [],
+        )) {
           artists.putIfAbsent(genre, () => {}).addAll(songArtists);
           albums.putIfAbsent(genre, () => {}).add(albumIdentityOf(song));
         }

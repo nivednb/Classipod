@@ -76,4 +76,24 @@ void main() {
     );
     expect(result.songs.single.identity, tracks[1].identity);
   });
+  test('matches renamed files by unique stable video ID', () {
+    final index = FolderIndex([
+      song('/Browser Music/New title [abcdefghijk].m4a'),
+    ]);
+    final result = parseLocalPlaylist('Old title [abcdefghijk].m4a', index);
+    expect(
+      result.songs.single.filePath,
+      '/Browser Music/New title [abcdefghijk].m4a',
+    );
+    expect(result.unresolved, isEmpty);
+  });
+  test('never guesses when a video ID matches multiple files', () {
+    final index = FolderIndex([
+      song('/One/a [abcdefghijk].m4a'),
+      song('/Two/b [abcdefghijk].m4a'),
+    ]);
+    final result = parseLocalPlaylist('Old title [abcdefghijk].m4a', index);
+    expect(result.songs, isEmpty);
+    expect(result.unresolved, hasLength(1));
+  });
 }

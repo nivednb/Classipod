@@ -60,7 +60,7 @@ class _DeviceScreenContentState extends ConsumerState<DeviceScreenContent>
               (settings) => settings.splitScreenEnabled,
             ),
           );
-          final useSplit = splitEnabled && !context.isFirstGenerationTheme;
+          final useSplit = splitEnabled;
           final header = _Header(
             title: _title(context, ref, state),
             split: useSplit && _usesSplitScreen(state),

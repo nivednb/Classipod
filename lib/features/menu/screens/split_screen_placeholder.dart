@@ -279,8 +279,7 @@ class _SplitScreenPlaceholderState extends ConsumerState<SplitScreenPlaceholder>
     }
     return CupertinoPageScaffold(
       resizeToAvoidBottomInset: false,
-      child:
-          currentSettings.splitScreenEnabled && !context.isFirstGenerationTheme
+      child: currentSettings.splitScreenEnabled
           ? Row(
               children: [
                 Expanded(
