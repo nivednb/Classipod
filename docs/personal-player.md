@@ -1,4 +1,4 @@
-# Personal library player
+# ClassiPod web app guide
 
 This product includes software developed by Aditya R.
 The BSD-4-Clause license and upstream attribution remain in `LICENSE`.
@@ -7,20 +7,23 @@ Based on ClassiPod commit `772a6d3` (Flutter 3.47.6). This is a personal
 extension, not an official release of ClassiPod, klikWheel or SepiaPod.
 The reference apps' code and artwork have not been copied.
 
-## First implementation
+## Library and controls
 
 - **Music → Folders:** navigate indexed local folders, including subfolders.
   Filenames are shown so a tagged title cannot hide the actual file. Select a
   track to play the current folder's tracks. Hold a folder to play its subtree;
   the play button plays the open subtree. MENU moves to the parent folder.
-  The explorer only shows indexed music; choose/change the allowed music root
-  through Settings → Library Settings → Re-index as in upstream.
-- **Playlist import:** use the document-plus button in Folders for a UTF-8 M3U
-  or M3U8 file. Track order and repeated references are preserved. Relative
-  paths, file URIs and uniquely matching relocated path suffixes are supported.
-  Duplicate filenames are not guessed; the result reports unresolved items.
-  Only indexed local songs can be imported. HLS and remote stream URLs are not
-  supported. Imports create a saved playlist and do not overwrite another one.
+  The explorer only shows indexed music. On native platforms the music root is
+  configured through Settings → Library Settings → Re-index; the web uses files
+  explicitly imported into the browser.
+- **Playlist import:** choose **Music → Folders → Import playlists**, then
+  select UTF-8 M3U/M3U8 files (multiple files on web). Import the audio first.
+  The app matches
+  local paths, unique relocated filename suffixes, or a unique trailing video ID;
+  ambiguous and missing entries are reported. Remote URLs and HLS are not
+  imported. New named playlists retain the matched order and repeated entries.
+  Re-importing an existing name appends newly matched songs without removing
+  existing entries; it does not reorder or remove them to mirror a changed file.
 - **Song views:** Compact, List, Artwork and Covers. Cycle the button above
   Music → Songs, or choose Settings → Library & Wheel → Song view. Upstream
   Music → Cover Flow retains both Original and Big album layouts.
@@ -98,8 +101,11 @@ hierarchy is not promised there. Supported playback formats depend on Safari;
 start with MP3 or M4A.
 
 The player uses imported music when present, otherwise the demo collection.
-The existing document button imports M3U/M3U8 references after audio is imported.
-Relative playlist references can match unique filename suffixes. Keep originals:
+The **Import playlists** button imports M3U/M3U8 references after audio is
+imported. Unique filename suffixes and stable IDs can match moved or renamed
+files. Re-import the same named file after importing new songs; new matches are
+appended, and missing entries are counted. It does not automatically monitor
+files or sync playlist removals and reorderings. Keep originals:
 iOS can remove browser storage under storage pressure or after clearing website
 data. Refresh/reopen resolves fresh audio URLs for saved playlists.
 
@@ -125,9 +131,10 @@ wheel detents. iPhone sound and haptics require physical-device validation.
 ## First-generation screen theme
 
 Settings → Theme cycles through Light, Dark and First generation. The latter
-uses a pale LCD palette and single-column menu inspired by the 2001 iPod. It
-does not change the saved split-screen preference, so changing themes restores
-the user's previous layout. Wheel color and labels remain independently chosen.
+uses a pale LCD palette, pixel-style Latin text (Pixelify Sans, OFL-licensed),
+and a recessed screen inspired by the 2001 iPod. Split-screen can be switched
+on or off in every theme. Other scripts use platform fallback fonts where
+needed. Wheel color and labels remain independently chosen.
 
 ## Wheel style
 
@@ -135,3 +142,52 @@ Settings → Library & Wheel → Wheel style switches between the current wheel
 and a first-generation-inspired wheel with four outlined outer buttons. Both
 styles use the same wheel color and label color, controls, sound and preferences.
 The original iPod had a physical wheel; touch behavior is an approximation.
+
+
+## Share and install
+
+Share <https://nivednb.github.io/Classipod/>. The public site has no shared
+account or central music library. Each person's imports, playlists and settings
+stay in that device's browser storage; the site itself is shared. People must
+supply their own playable audio files and playlist files. Nothing in the link
+transfers the owner's songs. The same browser/profile may share site storage
+across tabs; separate devices or profiles do not automatically synchronize.
+
+- **iPhone/iPad:** open in Safari, Share → Add to Home Screen, enable Open as
+  Web App if offered, then launch the icon. Import songs in that installed app.
+  See [Apple's instructions](https://support.apple.com/guide/iphone/iphea86e5236/ios).
+- **Android:** open in Chrome and use the browser's Install app/Add to Home
+  screen option. Labels vary by browser and version. See
+  [Chrome's instructions](https://support.google.com/chrome/answer/9658361).
+- **Desktop:** open the link in a supported browser. Browser install controls
+  may offer a standalone window.
+
+Open online once, wait for **Offline app ready**, and keep the originals. The
+service worker caches the application shell, not network demo or server audio.
+Each imported song is a local browser-storage copy. Storage quotas vary; large
+imports may fail and the OS/browser may evict data. Clearing site data or
+removing a Home Screen app can delete its library. There is no cloud backup,
+account system, automatic file sync or guarantee of background playback. Audio
+codec support depends on browser/OS; AAC/M4A and MP3 are common choices.
+
+**Language grouping:** embedded musical genre tags and conservative cues in
+file names are shown under Genres. Imported playlists named `M.playlist`,
+`T.playlist`, `H.playlist`, and `E.playlist` supply Malayalam, Tamil, Hindi,
+and English labels for their matched songs. A song with multiple clear
+language cues can appear under Language: Mix. Playlist membership and title
+clues are not authoritative language detection; incomplete or mislabeled
+files can yield incomplete or inaccurate categories. Long mixes remain single
+files. Edit a local playlist and re-import it to add new matches.
+
+**Appearance and feedback:** Settings → Theme selects the display. Settings →
+Library & Wheel controls wheel color, label color, style, position and optional
+3D appearance; Settings → Split Screen Mode works in every theme. Wheel click
+sound is subject to browser audio rules and device volume. Safari on iPhone
+does not offer the native haptic feedback used by the iOS app.
+
+**Privacy and networking:** imported audio, playlist entries and preferences
+are stored in the browser on the device. The site host receives ordinary web
+requests for the app; demo tracks/artwork use remote URLs, and an optional
+Subsonic connection sends requests to the configured server. Neither a public
+repository nor the shared URL is a private cloud vault. Do not commit audio,
+playlist files, cookies or credentials to the repository.

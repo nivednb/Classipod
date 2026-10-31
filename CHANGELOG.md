@@ -1,3 +1,12 @@
+## Web app sharing and documentation
+
+- Document standalone installation, independent on-device libraries, offline
+  storage limits and M3U/M3U8 import/update behavior.
+- Add a first-generation pixel-style screen font, recessed LCD rim and
+  independently adjustable split-screen and wheel appearance.
+- Support playlist-derived language grouping and a Mix category for clear
+  multilingual cues without publishing anyone's private playlists.
+
 ## Switchable first-generation wheel (unreleased)
 
 - Add a first-generation-inspired segmented wheel style with independent colors.
@@ -5,7 +14,7 @@
 
 ## First-generation screen theme (unreleased)
 
-- Add a selectable pale monochrome LCD theme with a single-column menu.
+- Add a selectable pale monochrome LCD theme; split screen can be enabled or disabled.
 - Preserve the existing themes and independent wheel color preferences.
 
 ## Personal wheel feedback and colors (unreleased)

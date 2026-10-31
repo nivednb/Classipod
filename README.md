@@ -10,9 +10,34 @@ Navidrome. Browse both libraries together, or focus on your server collection.
 
 </div>
 
-Available for Android, iOS, macOS, Windows, Linux and web. Native apps support
-local music and server streaming. The web app plays demo songs or connects to
-your server; it does not import local folders.
+## Use the web app
+
+**[Open ClassiPod](https://nivednb.github.io/Classipod/)** — this public link
+opens an installable, standalone web app. Share the link; each person imports
+their own audio and playlists on their own device. The link does not share your
+library or automatically sync libraries between devices.
+
+On iPhone, open the link in Safari, tap **Share → Add to Home Screen**, enable
+**Open as Web App** if offered, then open the new icon. On Android, use Chrome's
+**Install app** or **Add to Home screen** option. Open the installed app online
+first, then choose **Music → Folders → Import songs from Files**. Once the app
+shows **Offline app ready**, imported songs can play without a connection,
+subject to browser storage and audio-format support. Import M3U/M3U8 playlists
+from **Music → Folders → Import playlists** after importing their songs.
+
+Your selected audio is copied to local browser storage, not uploaded to this
+repository. Storage is per device/browser profile; Home Screen apps and Safari
+tabs can use separate storage. Keep original files: clearing website data,
+uninstalling an app, storage pressure, or browser policy can remove local data.
+Demo and optional Subsonic server streams need a network connection. This player
+does not download music or share other people's libraries.
+
+See the [web app guide](docs/personal-player.md) for setup, supported formats,
+playlist matching, troubleshooting, appearance, and limitations.
+
+The upstream project also supports native Android, iOS, macOS, Windows and
+Linux builds. The native download links below refer to upstream releases and
+may not include changes in this web fork.
 
 Local files play offline. Server music requires your own compatible server,
 an account on that server, and a network connection. ClassiPod does not include
@@ -61,8 +86,9 @@ a music subscription, offline server downloads, or server playlist syncing.
 - 🎞️ Explore Cover Flow with **Original** and **Big** layouts, smooth wheel
   motion, and animated transitions.
 - 🪞 Enjoy reflective album artwork.
-- 🎨 Choose light and dark screen themes and device colors including Silver,
-  Black, OLED Black, and more.
+- 🎨 Choose light, dark or pixel-style first-generation screen themes and
+  device colors including Silver, Black and OLED Black.
+- ⚙️ Adjust wheel style, color, labels, position, 3D appearance and split screen.
 - 📺 Browse with split-screen previews and scrolling titles.
 - 🔤 See a letter indicator while scrolling quickly through your collection.
 - 📌 Return to remembered selections and scroll positions when navigating back.
@@ -105,8 +131,9 @@ by platform:
 Open **Settings → Library Settings → Subsonic** and enter the server's base
 URL (including any reverse-proxy path), username and password. ClassiPod
 supports token-authenticated Subsonic API 1.13+ servers, including Navidrome.
-The connection is checked before saving. Native apps combine server and local music; Web shows
-the server library instead of demo songs while enabled.
+The connection is checked before saving. Native apps combine server and local
+music; the web can combine server tracks with imported browser music. Demo songs
+are hidden while the server is enabled.
 
 **Configure Subsonic** edits the connection or removes it. Turning Subsonic off
 keeps its configuration and cache, hides its tracks, and stops server playback.
@@ -207,7 +234,7 @@ builds require the Visual Studio ATL component used by flutter_secure_storage.
   <tr>
       <td>Web App</td>
       <td>
-        <a href="https://adeeteya.github.io/Classipod/#/">
+        <a href="https://nivednb.github.io/Classipod/">
           <img alt="Web App" src="https://img.shields.io/static/v1?label=Webapp&message=Visit+Website&color=blueviolet&style=for-the-badge&logo=googlechrome&logoColor=white&logoSize=auto">
         </a>
       </td>
@@ -247,9 +274,9 @@ the index.
 
 Apple downloads appear only on releases built with their platform options
 selected. See [Apple release documentation](docs/apple-releases.md) for build
-commands, checksums, and release configuration. The web app can play demo songs
-or stream from a Subsonic/Navidrome server.
-It does not import local folders.
+commands, checksums, and release configuration. The web player imports selected
+audio files into browser storage; iPhone's Files picker does not necessarily
+preserve folder structure. It also supports optional Subsonic/Navidrome streaming.
 
 ## 🔌 Plugins
 

@@ -1,3 +1,8 @@
+> **Fork notice:** The policy below belongs to the upstream ClassiPod project
+> and describes its author's service. For the behavior of this fork's public
+> web app, see the [web app privacy and networking notes](docs/personal-player.md#share-and-install).
+> The fork is separately hosted and is not operated by the upstream author.
+
 **Privacy Policy**
 
 Aditya built the Classipod app as an Open Source app. This SERVICE is provided by Aditya at no cost and is intended for use as is.

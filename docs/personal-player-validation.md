@@ -54,3 +54,17 @@ release compilation. Live Chromium checks confirmed:
 
 This verifies cache readiness and the offline fallback test, not a physical
 Safari airplane-mode or lock-screen test. No personal audio was uploaded.
+
+
+## Shared web app and recent updates — 2026-10-31
+
+- Public Pages URL responds without authentication and provides a standalone
+  web manifest and a versioned service worker.
+- Browser preview verified first-generation split-screen on/off, local audio
+  import, M3U8 import and re-import adding a newly matched song without creating
+  another playlist. Language grouping reflected the imported named playlist.
+- The first-generation pixel theme was visually inspected in a browser; GitHub
+  Pages release checks, including theme, playlist and language tests, passed.
+- The owner reported that playlist import works on their iPhone. This is not a
+  test of a second person's device, iOS storage eviction, every audio codec,
+  offline playback in airplane mode, or all browser versions.
