@@ -4,6 +4,7 @@
   const audioExtension = /\.(mp3|m4a|mp4|aac|wav|flac|ogg|opus|aif|aiff)$/i;
   const objectUrls = new Map();
   let database;
+  let metadataDatabase;
   let pendingPicker = false;
 
   function openDatabase() {
@@ -41,7 +42,8 @@
         for (const file of audio) {
           const path = normalizePath(file.webkitRelativePath || file.name);
           store.put({id: 'browser:' + path, path, name: file.name,
-            mime: file.type, blob: file, modified: file.lastModified});
+            mime: file.type, blob: file, modified: file.lastModified,
+            revision: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)});
         }
       } catch (error) {
         transaction.abort();
@@ -68,30 +70,116 @@
     return new Set(audio.map(file => normalizePath(file.webkitRelativePath || file.name))).size;
   }
 
+  // An independent, disposable cache: it never upgrades or rewrites the song database.
+  // A failed cache is a performance loss only; the original songs remain readable.
+  function openMetadataDatabase() {
+    if (!metadataDatabase) metadataDatabase = new Promise(resolve => {
+      try {
+        const request = indexedDB.open('classipod-metadata-cache-v1', 1);
+        request.onupgradeneeded = () => request.result.createObjectStore('metadata', {keyPath: 'id'});
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = request.onblocked = () => resolve(null);
+      } catch (_) { resolve(null); }
+    });
+    return metadataDatabase;
+  }
+  function cacheSignature(row) {
+    return JSON.stringify([row.revision || null, row.modified || 0, row.blob.size, row.mime || '']);
+  }
+  async function readMetadataCache() {
+    const empty = () => ({db: null, entries: new Map()});
+    // A stuck or blocked optional cache must never stall the user's library.
+    let timer;
+    const timeout = new Promise(resolve => { timer = setTimeout(() => resolve(empty()), 1000); });
+    const load = (async () => {
+      const db = await openMetadataDatabase();
+      if (!db) return empty();
+      return new Promise(resolve => {
+        try {
+          const req = db.transaction('metadata', 'readonly').objectStore('metadata').getAll();
+          req.onsuccess = () => resolve({db, entries: new Map(req.result.map(item => [item.id, item]))});
+          req.onerror = () => resolve(empty());
+        } catch (_) { resolve(empty()); }
+      });
+    })();
+    const result = await Promise.race([load, timeout]);
+    clearTimeout(timer);
+    return result;
+  }
+  function saveMetadataCache(db, entries) {
+    if (!db || !entries.length) return;
+    try {
+      const tx = db.transaction('metadata', 'readwrite');
+      const store = tx.objectStore('metadata');
+      // Read and account inside the write transaction so concurrent tabs cannot
+      // each exceed the shared 12 MiB artwork budget.
+      const request = store.getAll();
+      request.onsuccess = () => {
+        const sizes = new Map();
+        let used = 0;
+        for (const item of request.result) {
+          const size = item.tags?.picture?.size || 0;
+          sizes.set(item.id, size);
+          used += size;
+        }
+        for (const entry of entries) {
+          const size = entry.tags.picture?.size || 0;
+          const previous = sizes.get(entry.id) || 0;
+          if (used - previous + size > 12 * 1024 * 1024) continue;
+          used += size - previous;
+          sizes.set(entry.id, size);
+          store.put(entry);
+        }
+      };
+      // Quota or cache errors never block or delete the music library.
+      tx.onerror = tx.onabort = () => {};
+    } catch (_) { /* continue without the optional cache */ }
+  }
   const tagsById = new Map();
   const artworkUrls = new Map();
-  function readTags(row) {
+  function materializeTags(row, tags) {
+    let artwork;
+    try {
+      if (tags.picture) {
+        artwork = artworkUrls.get(row.id);
+        if (!artwork) {
+          artwork = URL.createObjectURL(tags.picture);
+          artworkUrls.set(row.id, artwork);
+        }
+      }
+    } catch (_) { /* malformed artwork never prevents loading */ }
+    return {...tags, artwork};
+  }
+  function readTags(row, cached, pending) {
     if (tagsById.has(row.id)) return tagsById.get(row.id);
+    const signature = cacheSignature(row);
+    if (cached && cached.signature === signature && cached.tags && typeof cached.tags === 'object') {
+      const result = Promise.resolve(materializeTags(row, cached.tags));
+      tagsById.set(row.id, result);
+      return result;
+    }
     const promise = new Promise(resolve => {
       if (!window.jsmediatags) return resolve({});
       try {
         window.jsmediatags.read(row.blob, {
           onSuccess(result) {
             const t = result.tags || {};
-            let artwork;
+            let picture;
             try {
-              if (t.picture && t.picture.data && t.picture.data.length) {
-                artwork = URL.createObjectURL(new Blob([new Uint8Array(t.picture.data)],
-                  {type: t.picture.format || 'image/jpeg'}));
-                artworkUrls.set(row.id, artwork);
+              if (t.picture?.data?.length) {
+                picture = new Blob([new Uint8Array(t.picture.data)],
+                  {type: t.picture.format || 'image/jpeg'});
               }
-            } catch (_) {
-              // A malformed picture must never prevent the music library loading.
-            }
-            resolve({title: typeof t.title === 'string' ? t.title : null,
+            } catch (_) { /* keep readable tags if artwork is malformed */ }
+            const tags = {title: typeof t.title === 'string' ? t.title : null,
               artist: typeof t.artist === 'string' ? t.artist : null,
               album: typeof t.album === 'string' ? t.album : null,
-              genre: typeof t.genre === 'string' ? t.genre : null, artwork});
+              genre: typeof t.genre === 'string' ? t.genre : null, picture};
+            // Bound extra storage per track; large covers continue to load normally.
+            if (!picture || picture.size <= 256 * 1024) {
+              pending.push({id: row.id, signature, tags});
+            }
+            resolve(materializeTags(row, tags));
           },
           onError() { resolve({}); },
         });
@@ -102,11 +190,13 @@
   }
   async function list() {
     const db = await openDatabase();
-    const rows = await new Promise((resolve, reject) => {
+    const rowsPromise = new Promise((resolve, reject) => {
       const request = db.transaction('songs', 'readonly').objectStore('songs').getAll();
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
+    const [rows, cache] = await Promise.all([rowsPromise, readMetadataCache()]);
+    const pending = [];
     const result = new Array(rows.length);
     let next = 0;
     async function worker() {
@@ -114,7 +204,7 @@
         const index = next++;
         const row = rows[index];
         if (!objectUrls.has(row.id)) objectUrls.set(row.id, URL.createObjectURL(row.blob));
-        const tags = await readTags(row);
+        const tags = await readTags(row, cache.entries.get(row.id), pending);
         result[index] = {id: row.id, path: row.path, mime: row.mime,
           title: tags.title || row.name.replace(audioExtension, '').replace(/\s*\[[A-Za-z0-9_-]{11}\]$/, ''),
           artist: tags.artist, album: tags.album, genre: tags.genre, artwork: tags.artwork,
@@ -122,7 +212,21 @@
       }
     }
     await Promise.all(Array.from({length: Math.min(4, rows.length)}, worker));
+    saveMetadataCache(cache.db, pending);
     return JSON.stringify(result);
+  }
+
+  // Playback only needs one file, not another scan of the entire library.
+  async function resolveSong(id) {
+    const db = await openDatabase();
+    const row = await new Promise((resolve, reject) => {
+      const request = db.transaction('songs', 'readonly').objectStore('songs').get(id);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    if (!row) return 'null';
+    if (!objectUrls.has(row.id)) objectUrls.set(row.id, URL.createObjectURL(row.blob));
+    return JSON.stringify({url: objectUrls.get(row.id)});
   }
 
   function importSongs() {
@@ -176,5 +280,5 @@
     return registration.active?.scriptURL.endsWith('/personal-player-sw.js') || false;
   }
 
-  window.classipodLibrary = Object.freeze({list, importSongs, pickPlaylists, offlineReady});
+  window.classipodLibrary = Object.freeze({list, resolveSong, importSongs, pickPlaylists, offlineReady});
 })();

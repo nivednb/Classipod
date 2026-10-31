@@ -1,3 +1,9 @@
+## Web startup and playback performance
+
+- Cache locally read metadata and bounded artwork for faster subsequent starts.
+- Resolve a single local track for playback without rescanning the library.
+- Fall back to original-file reads when the optional cache is unavailable.
+
 ## Web app sharing and documentation
 
 - Document standalone installation, independent on-device libraries, offline

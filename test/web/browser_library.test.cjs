@@ -10,7 +10,7 @@ function page(indexedDB = new IDBFactory(), metadataReader = null) {
   let serial = 0;
   const revoked = [];
   const context = {
-    indexedDB, navigator: {}, window: {jsmediatags: metadataReader}, Blob,
+    indexedDB, navigator: {}, window: {jsmediatags: metadataReader}, Blob, setTimeout, clearTimeout,
     URL: {createObjectURL: () => `blob:page-${Math.random()}-${++serial}`,
       revokeObjectURL: url => revoked.push(url)},
     document: {
@@ -118,4 +118,135 @@ test('playlist picker accepts multiple local M3U files without an iOS filter', a
   const files = JSON.parse(await result);
   assert.deepEqual(files.map(file => file.name), ['M.playlist.m3u8', 'H.playlist.m3u8']);
   assert.match(files[0].text, /Song.m4a/);
+});
+
+test('metadata and artwork persist across fresh page sessions without rereading audio', async () => {
+  const db = new IDBFactory();
+  let reads = 0;
+  const reader = {read(blob, callbacks) { reads++; callbacks.onSuccess({tags: {
+    title: 'Cached title', artist: 'Artist', album: 'Album', genre: 'Pop',
+    picture: {format: 'image/jpeg', data: [1, 2, 3]},
+  }}); }};
+  const first = page(db, reader);
+  await first.importFiles([song('Track [abcdefghijk].m4a')]);
+  const firstRow = JSON.parse(await first.api.list())[0];
+  assert.equal(reads, 1);
+  const second = page(db, reader);
+  const secondRow = JSON.parse(await second.api.list())[0];
+  assert.equal(reads, 1, 'the next session must reuse cached tags');
+  assert.equal(secondRow.title, firstRow.title);
+  assert.equal(secondRow.artist, firstRow.artist);
+  assert.equal(secondRow.genre, firstRow.genre);
+  assert.match(secondRow.artwork, /^blob:/);
+  assert.notEqual(secondRow.artwork, firstRow.artwork);
+});
+
+test('re-imported audio invalidates cached tags even when size and timestamp match', async () => {
+  const db = new IDBFactory();
+  let reads = 0;
+  const reader = {read(blob, callbacks) { reads++; blob.text().then(text =>
+    callbacks.onSuccess({tags: {title: text}})); }};
+  const first = page(db, reader);
+  await first.importFiles([song('same.m4a', 'first')]);
+  assert.equal(JSON.parse(await first.api.list())[0].title, 'first');
+  const second = page(db, reader);
+  await second.importFiles([song('same.m4a', 'other')]);
+  assert.equal(JSON.parse(await second.api.list())[0].title, 'other');
+  assert.equal(reads, 2);
+  const third = page(db, reader);
+  assert.equal(JSON.parse(await third.api.list())[0].title, 'other');
+  assert.equal(reads, 2);
+});
+
+test('metadata-cache failure does not block music or change its data', async () => {
+  const actual = new IDBFactory();
+  const db = {open(name, version) {
+    if (name === 'classipod-metadata-cache-v1') throw new Error('cache unavailable');
+    return actual.open(name, version);
+  }};
+  let reads = 0;
+  const reader = {read(blob, callbacks) { reads++; callbacks.onSuccess({tags:{title:'Still plays'}}); }};
+  const first = page(db, reader);
+  await first.importFiles([song('safe.m4a')]);
+  assert.equal(JSON.parse(await first.api.list())[0].title, 'Still plays');
+  assert.equal(JSON.parse(await page(db, reader).api.list())[0].title, 'Still plays');
+  assert.equal(reads, 2);
+});
+
+test('oversized artwork is not cached or lost', async () => {
+  const db = new IDBFactory();
+  let reads = 0;
+  const reader = {read(blob, callbacks) { reads++; callbacks.onSuccess({tags: {
+    title: 'Large cover', picture: {format: 'image/jpeg', data: new Uint8Array(256 * 1024 + 1)},
+  }}); }};
+  const first = page(db, reader);
+  await first.importFiles([song('large.m4a')]);
+  assert.match(JSON.parse(await first.api.list())[0].artwork, /^blob:/);
+  assert.match(JSON.parse(await page(db, reader).api.list())[0].artwork, /^blob:/);
+  assert.equal(reads, 2);
+});
+
+test('playback resolves one song without reading tags for the library', async () => {
+  const db = new IDBFactory();
+  let reads = 0;
+  const reader = {read(blob, callbacks) { reads++; callbacks.onSuccess({tags: {title:'Title'}}); }};
+  const first = page(db, reader);
+  await first.importFiles([song('a.m4a'), song('b.m4a')]);
+  const second = page(db, reader);
+  const result = JSON.parse(await second.api.resolveSong('browser:/Browser Music/a.m4a'));
+  assert.match(result.url, /^blob:/);
+  assert.equal(reads, 0);
+  assert.equal(JSON.parse(await second.api.resolveSong('browser:/Browser Music/missing.m4a')), null);
+});
+
+test('a stalled optional metadata cache cannot stop music loading', async () => {
+  const actual = new IDBFactory();
+  const db = {open(name, version) {
+    if (name === 'classipod-metadata-cache-v1') return {};
+    return actual.open(name, version);
+  }};
+  const reader = {read(blob, callbacks) { callbacks.onSuccess({tags:{title:'Available'}}); }};
+  const app = page(db, reader);
+  await app.importFiles([song('safe.m4a')]);
+  assert.equal(JSON.parse(await app.api.list())[0].title, 'Available');
+});
+
+test('artwork cache has a total size limit without hiding uncached covers', async () => {
+  const db = new IDBFactory();
+  let reads = 0;
+  const picture = new Uint8Array(256 * 1024);
+  const reader = {read(blob, callbacks) { reads++; callbacks.onSuccess({tags: {
+    title: 'Cover', picture: {format: 'image/jpeg', data: picture},
+  }}); }};
+  const first = page(db, reader);
+  await first.importFiles(Array.from({length: 50}, (_, i) => song(`cover-${i}.m4a`)));
+  assert.equal(JSON.parse(await first.api.list()).length, 50);
+  const rows = JSON.parse(await page(db, reader).api.list());
+  assert.equal(rows.length, 50);
+  assert.ok(rows.every(row => row.artwork));
+  assert.equal(reads, 52, 'only 48 covers fit in the 12 MiB cache');
+});
+
+test('malformed cache entries are ignored and tags are read normally', async () => {
+  const db = new IDBFactory();
+  let reads = 0;
+  const reader = {read(blob, callbacks) { reads++; callbacks.onSuccess({tags:{title:'Valid'}}); }};
+  const first = page(db, reader);
+  await first.importFiles([song('safe.m4a')]);
+  await first.api.list();
+  const cache = await new Promise((resolve, reject) => {
+    const request = db.open('classipod-metadata-cache-v1', 1);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  await new Promise((resolve, reject) => {
+    const tx = cache.transaction('metadata', 'readwrite');
+    const store = tx.objectStore('metadata');
+    const get = store.get('browser:/Browser Music/safe.m4a');
+    get.onsuccess = () => store.put({...get.result, tags:null});
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  assert.equal(JSON.parse(await page(db, reader).api.list())[0].title, 'Valid');
+  assert.equal(reads, 2);
 });

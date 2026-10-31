@@ -6,6 +6,9 @@ import 'package:classipod/core/models/music_metadata.dart';
 @JS('classipodLibrary.list')
 external JSPromise<JSString> _listSongs();
 
+@JS('classipodLibrary.resolveSong')
+external JSPromise<JSString> _resolveSong(JSString id);
+
 @JS('classipodLibrary.offlineReady')
 external JSPromise<JSBoolean> _offlineReady();
 
@@ -59,12 +62,13 @@ Future<int> importBrowserSongs() async =>
 // against this page's object URLs before handing a song to the audio player.
 Future<MusicMetadata> resolveBrowserSong(MusicMetadata song) async {
   if (!(song.songId?.startsWith('browser:') ?? false)) return song;
-  final songs = await readBrowserSongs();
-  final current = songs.where((s) => s.identity == song.identity).firstOrNull;
+  final current = jsonDecode(
+    (await _resolveSong(song.identity.toJS).toDart).toDart,
+  );
   if (current == null) {
     throw StateError(
       'This song is no longer in browser storage. Import it again.',
     );
   }
-  return song.copyWith(contentUri: current.contentUri);
+  return song.copyWith(contentUri: current['url'] as String);
 }

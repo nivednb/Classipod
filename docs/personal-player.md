@@ -100,6 +100,15 @@ that entry. iPhone's Files picker usually provides individual files, so a folder
 hierarchy is not promised there. Supported playback formats depend on Safari;
 start with MP3 or M4A.
 
+For faster later starts, the web app keeps a disposable on-device cache of
+readable song tags and small embedded artwork. The first launch after an update
+or a new import still reads the audio files; later launches reuse matching cached
+metadata. Cached artwork is limited to 12 MiB in total and 256 KiB per cover;
+larger or uncached covers are still read from the original audio. A missing,
+blocked, or full cache falls back to normal reads. Re-imported files invalidate
+their cached metadata. This cache is separate from the music database and is
+not a backup of your audio.
+
 The player uses imported music when present, otherwise the demo collection.
 The **Import playlists** button imports M3U/M3U8 references after audio is
 imported. Unique filename suffixes and stable IDs can match moved or renamed
