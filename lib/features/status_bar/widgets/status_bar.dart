@@ -42,10 +42,14 @@ class StatusBar extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: IpodTypography.screenTitle.copyWith(
-                    color: context.appPrimaryTextColor,
-                  ),
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.screenTitle,
+                  ).copyWith(color: context.appPrimaryTextColor),
                   maxLines: 1,
+                  textAlign: context.isFirstGenerationTheme
+                      ? TextAlign.center
+                      : TextAlign.start,
                 ),
               ),
               Consumer(

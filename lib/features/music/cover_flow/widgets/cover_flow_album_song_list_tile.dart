@@ -42,11 +42,15 @@ class CoverFlowAlbumSongListTile extends StatelessWidget {
                   child: SelectedMarqueeText(
                     songName,
                     isSelected: isSelected,
-                    style: IpodTypography.menu.copyWith(
-                      color: isSelected
-                          ? context.appInverseTextColor
-                          : context.appPrimaryTextColor,
-                    ),
+                    style:
+                        IpodTypography.forContext(
+                          context,
+                          IpodTypography.menu,
+                        ).copyWith(
+                          color: isSelected
+                              ? context.appInverseTextColor
+                              : context.appPrimaryTextColor,
+                        ),
                   ),
                 ),
                 Flexible(
@@ -60,11 +64,15 @@ class CoverFlowAlbumSongListTile extends StatelessWidget {
                         )
                       : Text(
                           songDuration.getMinuteAndSecondString,
-                          style: IpodTypography.menu.copyWith(
-                            color: isSelected
-                                ? context.appInverseTextColor
-                                : context.appPrimaryTextColor,
-                          ),
+                          style:
+                              IpodTypography.forContext(
+                                context,
+                                IpodTypography.menu,
+                              ).copyWith(
+                                color: isSelected
+                                    ? context.appInverseTextColor
+                                    : context.appPrimaryTextColor,
+                              ),
                           maxLines: 1,
                         ),
                 ),

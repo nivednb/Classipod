@@ -243,9 +243,15 @@ class _DeviceControlsState extends ConsumerState<DeviceControls> {
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: Text(
-                              context.localization.menuButtonText,
+                              context.isFirstGenerationTheme &&
+                                      experience.wheelStyle ==
+                                          WheelStyle.firstGeneration
+                                  ? context.localization.menuButtonText
+                                        .toLowerCase()
+                                  : context.localization.menuButtonText,
                               key: menuButtonGlobalKey,
                               style: TextStyle(
+                                fontFamily: Assets.helveticaFont,
                                 color: labelColor,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

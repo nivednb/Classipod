@@ -21,15 +21,17 @@ class AboutListTile extends StatelessWidget {
         children: [
           Text(
             titleText,
-            style: IpodTypography.title.copyWith(
-              color: context.appPrimaryTextColor,
-            ),
+            style: IpodTypography.forContext(
+              context,
+              IpodTypography.title,
+            ).copyWith(color: context.appPrimaryTextColor),
           ),
           Text(
             valueText,
-            style: IpodTypography.title.copyWith(
-              color: context.appPrimaryTextColor,
-            ),
+            style: IpodTypography.forContext(
+              context,
+              IpodTypography.title,
+            ).copyWith(color: context.appPrimaryTextColor),
           ),
         ],
       ),

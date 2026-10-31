@@ -19,11 +19,12 @@ class DisplayListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = IpodTypography.menu.copyWith(
-      color: isSelected
-          ? context.appInverseTextColor
-          : context.appPrimaryTextColor,
-    );
+    final textStyle = IpodTypography.forContext(context, IpodTypography.menu)
+        .copyWith(
+          color: isSelected
+              ? context.appInverseTextColor
+              : context.appPrimaryTextColor,
+        );
 
     return GestureDetector(
       onTap: onTap,

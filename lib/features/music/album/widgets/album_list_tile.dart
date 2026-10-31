@@ -29,11 +29,12 @@ class AlbumListTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleStyle = IpodTypography.title.copyWith(
-      color: isSelected
-          ? context.appInverseTextColor
-          : context.appPrimaryTextColor,
-    );
+    final titleStyle = IpodTypography.forContext(context, IpodTypography.title)
+        .copyWith(
+          color: isSelected
+              ? context.appInverseTextColor
+              : context.appPrimaryTextColor,
+        );
     final isDarkTheme =
         CupertinoTheme.of(context).brightness == Brightness.dark;
     final borderColor = isDarkTheme
@@ -103,11 +104,15 @@ class AlbumListTile extends ConsumerWidget {
                           : context.localization.nSongs(
                               albumDetails.albumSongs.length,
                             ),
-                      style: IpodTypography.description.copyWith(
-                        color: isSelected
-                            ? context.appInverseTextColor
-                            : context.appSecondaryTextColor,
-                      ),
+                      style:
+                          IpodTypography.forContext(
+                            context,
+                            IpodTypography.description,
+                          ).copyWith(
+                            color: isSelected
+                                ? context.appInverseTextColor
+                                : context.appSecondaryTextColor,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

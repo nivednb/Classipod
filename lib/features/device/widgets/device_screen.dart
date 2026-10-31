@@ -21,6 +21,7 @@ class DeviceScreen extends ConsumerWidget {
     final raised = ref.watch(
       libraryExperienceProvider.select((e) => e.threeDimensional),
     );
+    final retro = context.isFirstGenerationTheme;
     final size = MediaQuery.sizeOf(context);
 
     return AbsorbPointer(
@@ -31,7 +32,7 @@ class DeviceScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: context.appDeviceScreenBackgroundColor,
           borderRadius: BorderRadius.circular(8),
-          boxShadow: raised
+          boxShadow: (raised || retro)
               ? const [
                   BoxShadow(
                     color: Color(0x88000000),
@@ -46,7 +47,9 @@ class DeviceScreen extends ConsumerWidget {
                 ]
               : null,
           border: Border.all(
-            color: context.appDeviceScreenBorderColor,
+            color: retro
+                ? const Color(0xFF5B5D5C)
+                : context.appDeviceScreenBorderColor,
             width: 5,
           ),
         ),
@@ -59,11 +62,14 @@ class DeviceScreen extends ConsumerWidget {
               ),
               child: child,
             ),
-            if (raised)
+            if (raised || retro)
               IgnorePointer(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(3),
+                    border: retro
+                        ? Border.all(color: const Color(0x80919B9C), width: 2)
+                        : null,
                     gradient: const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,

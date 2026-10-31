@@ -84,7 +84,10 @@ class NowPlayingBottomBar extends ConsumerWidget {
                     "$elapsedTimeInMinutes:${elapsedTimeInSeconds < 10 ? "0$elapsedTimeInSeconds" : elapsedTimeInSeconds}",
                     maxLines: 1,
                     softWrap: false,
-                    style: IpodTypography.caption,
+                    style: IpodTypography.forContext(
+                      context,
+                      IpodTypography.caption,
+                    ),
                   ),
                 ),
               ),
@@ -119,7 +122,10 @@ class NowPlayingBottomBar extends ConsumerWidget {
                     "- $remainingTimeInMinutes:${remainingTimeInSeconds < 10 ? "0$remainingTimeInSeconds" : remainingTimeInSeconds}",
                     maxLines: 1,
                     softWrap: false,
-                    style: IpodTypography.caption,
+                    style: IpodTypography.forContext(
+                      context,
+                      IpodTypography.caption,
+                    ),
                   ),
                 ),
               ),

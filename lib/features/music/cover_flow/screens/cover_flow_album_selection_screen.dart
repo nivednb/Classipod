@@ -141,16 +141,18 @@ class _CoverFlowAlbumSelectionScreenState
                       children: [
                         Text(
                           widget.albumDetail.albumName,
-                          style: IpodTypography.title.copyWith(
-                            color: CupertinoColors.white,
-                          ),
+                          style: IpodTypography.forContext(
+                            context,
+                            IpodTypography.title,
+                          ).copyWith(color: CupertinoColors.white),
                           maxLines: 1,
                         ),
                         Text(
                           widget.albumDetail.albumArtistName,
-                          style: IpodTypography.metadata.copyWith(
-                            color: CupertinoColors.white,
-                          ),
+                          style: IpodTypography.forContext(
+                            context,
+                            IpodTypography.metadata,
+                          ).copyWith(color: CupertinoColors.white),
                           maxLines: 1,
                         ),
                       ],

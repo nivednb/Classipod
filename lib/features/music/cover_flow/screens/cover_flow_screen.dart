@@ -152,17 +152,19 @@ class _CoverFlowScreenState extends ConsumerState<_CoverFlowView>
                           Text(
                             displayItems[selectedIndex].albumName,
                             maxLines: 1,
-                            style: IpodTypography.metadata.copyWith(
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            style: IpodTypography.forContext(
+                              context,
+                              IpodTypography.metadata,
+                            ).copyWith(overflow: TextOverflow.ellipsis),
                           ),
                           const SizedBox(height: 5),
                           Text(
                             displayItems[selectedIndex].albumArtistName,
                             maxLines: 1,
-                            style: IpodTypography.metadata.copyWith(
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            style: IpodTypography.forContext(
+                              context,
+                              IpodTypography.metadata,
+                            ).copyWith(overflow: TextOverflow.ellipsis),
                           ),
                         ],
                       ),

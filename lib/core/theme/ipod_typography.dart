@@ -1,7 +1,17 @@
 import 'package:classipod/core/constants/assets.dart';
+import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 
 abstract final class IpodTypography {
+  static TextStyle forContext(BuildContext context, TextStyle style) =>
+      context.isFirstGenerationTheme
+      ? style.copyWith(
+          fontFamily: 'PixelifySans',
+          fontFamilyFallback: const ['Helvetica'],
+          fontWeight: FontWeight.w500,
+        )
+      : style;
+
   static const TextStyle body = TextStyle(
     fontFamily: Assets.helveticaFont,
     fontSize: 16,

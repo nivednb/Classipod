@@ -23,11 +23,12 @@ class GenreListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = IpodTypography.title.copyWith(
-      color: isSelected
-          ? context.appInverseTextColor
-          : context.appPrimaryTextColor,
-    );
+    final textStyle = IpodTypography.forContext(context, IpodTypography.title)
+        .copyWith(
+          color: isSelected
+              ? context.appInverseTextColor
+              : context.appPrimaryTextColor,
+        );
     final artists = context.localization.nArtists(artistCount);
     final albums = context.localization.nAlbums(albumCount);
 
@@ -70,11 +71,15 @@ class GenreListTile extends StatelessWidget {
                         '$artists, $albums',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: IpodTypography.description.copyWith(
-                          color: isSelected
-                              ? context.appInverseTextColor
-                              : context.appSecondaryTextColor,
-                        ),
+                        style:
+                            IpodTypography.forContext(
+                              context,
+                              IpodTypography.description,
+                            ).copyWith(
+                              color: isSelected
+                                  ? context.appInverseTextColor
+                                  : context.appSecondaryTextColor,
+                            ),
                       ),
                     ],
                   ),

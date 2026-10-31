@@ -49,11 +49,15 @@ class CondensedSongListTile extends StatelessWidget {
                   child: SelectedMarqueeText(
                     songName,
                     isSelected: isSelected,
-                    style: IpodTypography.menu.copyWith(
-                      color: isSelected
-                          ? context.appInverseTextColor
-                          : context.appPrimaryTextColor,
-                    ),
+                    style:
+                        IpodTypography.forContext(
+                          context,
+                          IpodTypography.menu,
+                        ).copyWith(
+                          color: isSelected
+                              ? context.appInverseTextColor
+                              : context.appPrimaryTextColor,
+                        ),
                   ),
                 ),
                 if (isCurrentlyPlaying)

@@ -25,9 +25,10 @@ class EmptyStateWidget extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               emptyDescription,
-              style: IpodTypography.description.copyWith(
-                color: CupertinoColors.white,
-              ),
+              style: IpodTypography.forContext(
+                context,
+                IpodTypography.description,
+              ).copyWith(color: CupertinoColors.white),
             ),
           ],
         ),

@@ -35,9 +35,10 @@ class IconPreviewWidget extends StatelessWidget {
                 child: Text(
                   titleText,
                   textAlign: TextAlign.center,
-                  style: IpodTypography.title.copyWith(
-                    color: AppPalette.previewForeground,
-                  ),
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.title,
+                  ).copyWith(color: AppPalette.previewForeground),
                 ),
               ),
               Icon(icon, size: 70, color: AppPalette.previewForeground),
@@ -46,9 +47,10 @@ class IconPreviewWidget extends StatelessWidget {
                 child: Text(
                   contentText,
                   textAlign: TextAlign.center,
-                  style: IpodTypography.description.copyWith(
-                    color: AppPalette.previewForeground,
-                  ),
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.description,
+                  ).copyWith(color: AppPalette.previewForeground),
                 ),
               ),
             ],

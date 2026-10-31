@@ -30,9 +30,10 @@ class SettingsPreviewWidget extends StatelessWidget {
                   context.localization.appTitle,
                   maxLines: 1,
                   textAlign: TextAlign.center,
-                  style: IpodTypography.title.copyWith(
-                    color: AppPalette.previewForeground,
-                  ),
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.title,
+                  ).copyWith(color: AppPalette.previewForeground),
                 ),
               ),
               Center(

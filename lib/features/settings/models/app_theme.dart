@@ -54,12 +54,18 @@ enum AppTheme {
           primaryColor: AppPalette.firstGenerationInk,
           textTheme: CupertinoTextThemeData(
             navTitleTextStyle: IpodTypography.screenTitle.copyWith(
+              fontFamily: 'PixelifySans',
+              fontFamilyFallback: const ['Helvetica'],
               color: AppPalette.firstGenerationInk,
             ),
             navLargeTitleTextStyle: IpodTypography.title.copyWith(
+              fontFamily: 'PixelifySans',
+              fontFamilyFallback: const ['Helvetica'],
               color: AppPalette.firstGenerationInk,
             ),
             textStyle: IpodTypography.body.copyWith(
+              fontFamily: 'PixelifySans',
+              fontFamilyFallback: const ['Helvetica'],
               color: AppPalette.firstGenerationInk,
             ),
           ),

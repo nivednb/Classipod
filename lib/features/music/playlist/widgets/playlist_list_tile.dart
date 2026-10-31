@@ -51,19 +51,27 @@ class PlaylistListTile extends StatelessWidget {
                       SelectedMarqueeText(
                         playlistModel.name,
                         isSelected: isSelected,
-                        style: IpodTypography.title.copyWith(
-                          color: isSelected
-                              ? context.appInverseTextColor
-                              : context.appPrimaryTextColor,
-                        ),
+                        style:
+                            IpodTypography.forContext(
+                              context,
+                              IpodTypography.title,
+                            ).copyWith(
+                              color: isSelected
+                                  ? context.appInverseTextColor
+                                  : context.appPrimaryTextColor,
+                            ),
                       ),
                       Text(
                         context.localization.nSongs(playlistModel.songs.length),
-                        style: IpodTypography.metadata.copyWith(
-                          color: isSelected
-                              ? context.appInverseTextColor
-                              : context.appSecondaryTextColor,
-                        ),
+                        style:
+                            IpodTypography.forContext(
+                              context,
+                              IpodTypography.metadata,
+                            ).copyWith(
+                              color: isSelected
+                                  ? context.appInverseTextColor
+                                  : context.appSecondaryTextColor,
+                            ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -40,28 +40,37 @@ class NowPlayingPreviewWidget extends ConsumerWidget {
                   currentMetadata.getTrackName,
                   key: ValueKey(currentMetadata.identity),
                   textAlign: TextAlign.center,
-                  style: IpodTypography.menu.copyWith(
-                    color: AppPalette.previewForeground,
-                  ),
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.menu,
+                  ).copyWith(color: AppPalette.previewForeground),
                 ),
                 const SizedBox(height: 5),
                 Text(
                   currentMetadata.getTrackArtistNames ??
                       context.localization.unknownArtist,
                   maxLines: 1,
-                  style: IpodTypography.metadata.copyWith(
-                    color: AppPalette.previewForeground,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  style:
+                      IpodTypography.forContext(
+                        context,
+                        IpodTypography.metadata,
+                      ).copyWith(
+                        color: AppPalette.previewForeground,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                 ),
                 const SizedBox(height: 5),
                 Text(
                   currentMetadata.getAlbumName,
                   maxLines: 1,
-                  style: IpodTypography.metadata.copyWith(
-                    color: AppPalette.previewForeground,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  style:
+                      IpodTypography.forContext(
+                        context,
+                        IpodTypography.metadata,
+                      ).copyWith(
+                        color: AppPalette.previewForeground,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                 ),
               ],
             ],

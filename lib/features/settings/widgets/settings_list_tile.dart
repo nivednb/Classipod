@@ -39,11 +39,15 @@ class SettingsListTile extends StatelessWidget {
                   child: SelectedMarqueeText(
                     text,
                     isSelected: isSelected,
-                    style: IpodTypography.menu.copyWith(
-                      color: isSelected
-                          ? context.appInverseTextColor
-                          : context.appPrimaryTextColor,
-                    ),
+                    style:
+                        IpodTypography.forContext(
+                          context,
+                          IpodTypography.menu,
+                        ).copyWith(
+                          color: isSelected
+                              ? context.appInverseTextColor
+                              : context.appPrimaryTextColor,
+                        ),
                   ),
                 ),
                 if (value != null)
@@ -53,11 +57,15 @@ class SettingsListTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.right,
-                      style: IpodTypography.menu.copyWith(
-                        color: isSelected
-                            ? context.appInverseTextColor
-                            : context.appSecondaryTextColor,
-                      ),
+                      style:
+                          IpodTypography.forContext(
+                            context,
+                            IpodTypography.menu,
+                          ).copyWith(
+                            color: isSelected
+                                ? context.appInverseTextColor
+                                : context.appSecondaryTextColor,
+                          ),
                     ),
                   ),
                 if (value == null && isSelected)

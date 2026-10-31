@@ -120,20 +120,28 @@ class SearchListTile extends ConsumerWidget {
                     SelectedMarqueeText(
                       title,
                       isSelected: isSelected,
-                      style: IpodTypography.title.copyWith(
-                        color: isSelected
-                            ? context.appInverseTextColor
-                            : context.appPrimaryTextColor,
-                      ),
+                      style:
+                          IpodTypography.forContext(
+                            context,
+                            IpodTypography.title,
+                          ).copyWith(
+                            color: isSelected
+                                ? context.appInverseTextColor
+                                : context.appPrimaryTextColor,
+                          ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       description,
-                      style: IpodTypography.description.copyWith(
-                        color: isSelected
-                            ? context.appInverseTextColor
-                            : context.appSecondaryTextColor,
-                      ),
+                      style:
+                          IpodTypography.forContext(
+                            context,
+                            IpodTypography.description,
+                          ).copyWith(
+                            color: isSelected
+                                ? context.appInverseTextColor
+                                : context.appSecondaryTextColor,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

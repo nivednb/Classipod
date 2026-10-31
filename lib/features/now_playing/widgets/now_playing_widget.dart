@@ -52,15 +52,19 @@ class NowPlayingWidget extends ConsumerWidget {
                 MarqueeText(
                   nowPlayingDetails.currentMetadata?.trackName ??
                       context.localization.unknownSong,
-                  style: IpodTypography.title,
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.title,
+                  ),
                 ),
                 const SizedBox(height: 5),
                 Text(
                   nowPlayingDetails.currentMetadata?.getTrackArtistNames ??
                       context.localization.unknownArtist,
-                  style: IpodTypography.metadata.copyWith(
-                    color: context.appSecondaryTextColor,
-                  ),
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.metadata,
+                  ).copyWith(color: context.appSecondaryTextColor),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -68,9 +72,10 @@ class NowPlayingWidget extends ConsumerWidget {
                 Text(
                   nowPlayingDetails.currentMetadata?.albumName ??
                       context.localization.unknownAlbum,
-                  style: IpodTypography.metadata.copyWith(
-                    color: context.appSecondaryTextColor,
-                  ),
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.metadata,
+                  ).copyWith(color: context.appSecondaryTextColor),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -96,7 +101,10 @@ class NowPlayingWidget extends ConsumerWidget {
                   const SizedBox(height: 22),
                 Text(
                   "${nowPlayingDetails.queuePosition + 1} ${context.localization.commonOfText} ${nowPlayingDetails.metadataList.length}",
-                  style: IpodTypography.caption,
+                  style: IpodTypography.forContext(
+                    context,
+                    IpodTypography.caption,
+                  ),
                 ),
                 const Spacer(),
               ],

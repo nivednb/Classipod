@@ -78,6 +78,9 @@ flutter:
     - assets/sounds/
 
   fonts:
+    - family: PixelifySans
+      fonts:
+        - asset: assets/fonts/PixelifySans.ttf
     - family: Helvetica
       fonts:
         - asset: assets/fonts/Helvetica.ttf
